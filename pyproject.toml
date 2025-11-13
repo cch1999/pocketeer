@@ -1,0 +1,97 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pocketeer"
+version = "0.1.0"
+description = "A minimal, fpocket-style pocket finder in pure Python/Numpy."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Charlie Harris", email = "cch57@cam.ac.uk" }
+]
+requires-python = ">=3.11"
+keywords = [
+    "protein",
+    "pocket",
+    "binding-site",
+    "bioinformatics",
+    "structural-biology",
+    "fpocket",
+    "delaunay",
+    "alpha-sphere",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "numba>=0.59",
+    "typer>=0.19.2",
+    "rich>=13.0",
+    "biotite>=0.40",
+]
+
+[project.urls]
+Homepage = "https://github.com/cch1999/pocketeer"
+Repository = "https://github.com/cch1999/pocketeer"
+Documentation = "https://cch1999.github.io/pocketeer"
+Issues = "https://github.com/cch1999/pocketeer/issues"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0",
+    "pytest-xdist>=3.8.0",
+    "ruff>=0.1.0",
+    "ty>=0.0.1a21",
+    "interrogate>=1.7.0",
+    "justfile>=0.0.1a0",
+    "ipykernel>=7.1.0",
+]
+docs = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.0.0",
+]
+vis = [
+    "atomworks>=1.0.3",
+    "dotenv>=0.9.9",
+]
+
+[project.scripts]
+pocketeer = "pocketeer.cli:app"
+
+[tool.ruff]
+line-length = 100
+lint.select = ["E","F","I","UP","B","BLE","PL","RUF"]
+lint.ignore = ["PLR0913"]  # Allow many function arguments for CLI
+exclude = [
+    "*.ipynb",           # Ignore Jupyter notebooks
+    "__pycache__",       # Ignore Python cache
+    ".git",              # Ignore git directory
+    ".venv",             # Ignore virtual environments
+    "venv",              # Ignore virtual environments
+    "build",             # Ignore build directories
+    "dist",              # Ignore distribution directories
+]
+
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_ignores = true
+strict = true
+
+[tool.pytest.ini_options]
+addopts = "-q"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pocketeer"]

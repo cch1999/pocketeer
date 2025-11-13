@@ -1,0 +1,49 @@
+name: Tests and Quality Checks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        #os: [ubuntu-latest, macos-latest, macos-14, windows-latest]
+        os: [ubuntu-latest]
+        python-version: ["3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install UV
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        uv sync --all-groups
+        uv add --dev pytest-cov
+
+    - name: Run Ruff linting
+      run: uv run ruff check src/ tests/
+
+    - name: Run Ruff formatting check
+      run: uv run ruff format --check src/ tests/
+
+    - name: Run ty type checking
+      run: uv run ty check src/ 
+
+    - name: Run tests
+      run: uv run pytest tests/ -v --cov=src/pocketeer --cov-report=xml --cov-report=term-missing
+
+    - name: Run Interrogate docstring coverage
+      run: |
+        uv run interrogate src/pocketeer 

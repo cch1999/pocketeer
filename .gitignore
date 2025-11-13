@@ -1,0 +1,47 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+*.nbc
+*.nbi
+build/
+dist/
+wheels/
+*.egg-info
+*.egg
+
+# Virtual environments
+.venv
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Outputs
+output/
+test_output/
+pockets/
+*.pdb.gz
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs
+site/
+
+# Coding
+.cursor/
+uv.lock
+dev.ipynb
+4tos.pdb

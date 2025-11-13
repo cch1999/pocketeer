@@ -1,0 +1,60 @@
+site_name: Pocketeer Documentation
+site_description: A lightweight, fast pocket finder in Python
+site_url: https://pocketeer.readthedocs.io/
+repo_url: https://github.com/cch1999/pocketeer
+repo_name: pocketeer
+
+theme:
+  name: material
+  logo: assets/logo.png  # Custom logo at the top (put your logo in docs/assets/logo.png)
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.left
+    - navigation.sticky  # ensures the nav bar is always visible on the left
+    - toc.integrate
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - API Reference: api-reference.md
+  - CLI Guide: cli-guide.md
+  - Visualization Guide: visualization-guide.md
+  - Algorithm: algorithm.md
+  
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - tables
+  - toc:
+      permalink: true

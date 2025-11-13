@@ -1,0 +1,100 @@
+name: Deploy to PyPI and Trigger Docs Build
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'pyproject.toml'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # Required for PyPI trusted publishing
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Needed for git tag operations
+    
+    - name: Install UV
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+    
+    - name: Set up Python
+      run: uv python install 3.11
+    
+    - name: Install build dependencies
+      run: uv sync --all-groups
+    
+    - name: Extract version from pyproject.toml
+      id: version
+      run: |
+        VERSION=$(grep '^version =' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+        echo "Extracted version: $VERSION"
+    
+    - name: Check if tag already exists
+      id: check_tag
+      run: |
+        if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+          echo "Tag v${{ steps.version.outputs.version }} already exists"
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+          echo "Tag v${{ steps.version.outputs.version }} does not exist"
+        fi
+    
+    - name: Create version tag
+      if: steps.check_tag.outputs.exists == 'false'
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag "v${{ steps.version.outputs.version }}"
+        git push origin "v${{ steps.version.outputs.version }}"
+    
+    - name: Build package
+      run: uv build
+    
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        print-hash: true
+        # Uses trusted publishing - configure in PyPI account settings
+
+  trigger-docs:
+    name: Trigger Read the Docs Build
+    runs-on: ubuntu-latest
+    needs: publish
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Extract version
+      id: version
+      run: |
+        VERSION=$(grep '^version =' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+    
+    - name: Trigger Read the Docs build
+      env:
+        RTD_API_TOKEN: ${{ secrets.RTD_API_TOKEN }}
+      run: |
+        if [ -z "$RTD_API_TOKEN" ]; then
+          echo "RTD_API_TOKEN not set. Read the Docs will auto-build on push."
+          echo "To manually trigger builds, set RTD_API_TOKEN secret."
+        else
+          # Trigger build via Read the Docs API
+          curl -X POST \
+            -H "Authorization: token $RTD_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://readthedocs.org/api/v3/projects/pocketeer/versions/latest/builds/" \
+            -d '{"active": true}'
+          echo "Triggered Read the Docs build for version ${{ steps.version.outputs.version }}"
+        fi
+
