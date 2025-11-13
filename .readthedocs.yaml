@@ -8,7 +8,7 @@ build:
   commands:
     - pip install uv
     - uv sync --group docs
-    - uv run mkdocs build
+    - uv run mkdocs build --site-dir $READTHEDOCS_OUTPUT/html
 
 python:
   install:
