@@ -79,7 +79,7 @@ def detect(
         1.8, "--polar-probe", help="Probe radius for polarity (Å)"
     ),
     merge_distance: float = typer.Option(
-        2, "--merge-distance", help="Distance threshold for merging (Å)"
+        1.75, "--merge-distance", help="Distance threshold for merging (Å)"
     ),
     min_spheres: int = typer.Option(35, "--min-spheres", help="Minimum spheres per pocket cluster"),
     ignore_hydrogens: bool = typer.Option(True, "--ignore-hydrogens", help="Ignore hydrogen atoms"),

@@ -45,7 +45,7 @@ def find_pockets(
         r_min: Minimum alpha-sphere radius (Å). Default: 3.0
         r_max: Maximum alpha-sphere radius (Å). Default: 6.0
         polar_probe_radius: Radius to test atom contact for polarity (Å). Default: 1.8
-        merge_distance: Distance threshold for merging nearby sphere clusters (Å). Default: 1.2
+        merge_distance: Distance threshold for merging nearby sphere clusters (Å). Default: 1.75
         min_spheres: Minimum number of spheres per pocket cluster. Default: 35
         ignore_hydrogens: Ignore hydrogen atoms (recommended). Default: True
         ignore_water: Ignore water molecules (recommended). Default: True
