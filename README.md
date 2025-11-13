@@ -12,7 +12,7 @@
 
 A lightweight, fast pocket finder in Python.
 
-Pocketeer detects binding pockets and cavities in protein structures using the alpha-sphere method based on Delaunay tessellation, similar to the popular fpocket, but more modern. It's lightweight, fast, and designed to be easy to use both as a Python library and command-line tool.
+Pocketeer detects binding pockets and cavities in protein structures using the alpha-sphere method based on Delaunay tessellation—similar to the popular fpocket, but with a modern, Pythonic interface. It's lightweight, fast, and easy to use as both a Python library and a command-line tool. Pocketeer natively supports [`atomarrays`](https://www.biotite-python.org/latest/) from [`biotite`](https://www.biotite-python.org/latest/), making it fully compatible with [`atomworks`](https://rosettacommons.github.io/atomworks/latest/).
 
 > 🚧 **Warning:** This software is in alpha. Some features (e.g., similarity calculation) are not yet implemented and there may be bugs. If you encounter any issues, please open an issue on the repository. 🚧
 
