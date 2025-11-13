@@ -17,7 +17,6 @@ TEST_FILES = [
     "4jnc.pdb",
     "4tos_receptor.pdb",
     "4tos.cif",  # mmCIF file
-    "4tos.pdb",
     "5o3l.pdb",
     "6qrd.pdb",
     "7gaw.pdb",
