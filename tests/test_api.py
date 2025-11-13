@@ -8,7 +8,7 @@ struc = pytest.importorskip("biotite.structure")
 
 
 @pytest.fixture
-def load_test_structure(pdb_id: str = "4tos") -> struc.AtomArray:
+def load_test_structure(pdb_id: str = "4tos_receptor") -> struc.AtomArray:
     """Load a test structure from the tests/data directory."""
     return load_structure(f"tests/data/{pdb_id}.pdb")
 
