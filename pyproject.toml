@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pocketeer"
-version = "0.1.0"
+version = "0.1.0a0"
 description = "A minimal, fpocket-style pocket finder in pure Python/Numpy."
 readme = "README.md"
 license = { text = "MIT" }
