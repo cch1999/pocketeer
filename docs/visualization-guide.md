@@ -37,7 +37,7 @@ viewer = pt.view_pockets(atomarray, pockets)
 viewer.show()  # This will display in the notebook
 ```
 
-![Visualization Example 1](../assets/vis_example_1.png)
+![Visualization Example 1](assets/vis_example_1.png)
 
 ## Customizing the Visualization
 
@@ -63,7 +63,7 @@ viewer2.show()
 viewer3.show()
 ```
 
-![Visualization Example 2](../assets/vis_example_2.png)
+![Visualization Example 2](assets/vis_example_2.png)
 
 ### Adjusting Sphere Appearance
 
