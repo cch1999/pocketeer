@@ -58,6 +58,13 @@ uv add 'pocketeer[dev, vis]'
 
 ## Quick Start
 
+<div align="center">
+  <img src="docs/assets/pocketeer_example.png" alt="Example pocketeer output" width="650"/>
+  <p><em>Example output image from Pocketeer</em></p>
+</div>
+
+
+
 A couple quick tips before you start:
 - Pocketeer automatically removes hydrogens from your structure, and is designed to work with them absent, so you don't need to worry about them.
 - By default, Pocketeer removes all waters and hetero atoms from your input structure. Set `ignore_hetero` to `False` if you don't want this behavior (e.g. to take into account a metal ion in the pocket).
@@ -182,7 +189,7 @@ Contributions are welcome! Please:
 ```bash
 git clone https://github.com/cch1999/pocketeer.git
 cd pocketeer
-pip install -e ".[dev]"
+pip install -e ".[dev]" # or uv sync --dev
 ```
 
 ## Support
