@@ -3,6 +3,7 @@
 [![Tests](https://github.com/cch1999/pocketeer/actions/workflows/run_tests.yml/badge.svg)](https://github.com/cch1999/pocketeer/actions/workflows/run_tests.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)
+[![PyPI version](https://img.shields.io/pypi/v/pocketeer)](https://pypi.org/project/pocketeer/)
 [![Docs](https://img.shields.io/badge/docs-latest-blueviolet.svg)](https://pocketeer.readthedocs.io/en/latest/)
 
 # Pocketeer
@@ -173,7 +174,7 @@ Contributions are welcome! Please:
 1. Fork the repository
 2. Create a feature branch
 3. Add tests for new functionality
-4. Run `ruff check --fix && ruff format` before committing
+4. Run `ruff check --fix && ruff format` before committing (or run `just all`)
 5. Submit a pull request
 
 ### Development installation
