@@ -45,7 +45,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/cch1999/pocketeer"
 Repository = "https://github.com/cch1999/pocketeer"
-Documentation = "https://cch1999.github.io/pocketeer"
+Documentation = "https://pocketeer.readthedocs.io"
 Issues = "https://github.com/cch1999/pocketeer/issues"
 
 [dependency-groups]
@@ -84,11 +84,6 @@ exclude = [
     "dist",              # Ignore distribution directories
 ]
 
-
-[tool.mypy]
-python_version = "3.11"
-warn_unused_ignores = true
-strict = true
 
 [tool.pytest.ini_options]
 addopts = "-q"
