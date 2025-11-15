@@ -45,7 +45,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/cch1999/pocketeer"
 Repository = "https://github.com/cch1999/pocketeer"
-Documentation = "https://cch1999.github.io/pocketeer"
+Documentation = "https://pocketeer.readthedocs.io"
 Issues = "https://github.com/cch1999/pocketeer/issues"
 
 [dependency-groups]
