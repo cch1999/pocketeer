@@ -3,8 +3,6 @@
 __version__ = "0.1.0"
 
 # Public API
-# Optional visualization function
-import contextlib
 
 from .api import find_pockets
 from .core import AlphaSphere, Pocket
