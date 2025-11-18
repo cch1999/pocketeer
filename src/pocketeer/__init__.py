@@ -16,15 +16,6 @@ from .utils import (
     write_summary,
 )
 
-# Suppress Atomworks import messages about env variables
-with contextlib.redirect_stdout(None), contextlib.redirect_stderr(None):
-    try:
-        import atomworks  # type: ignore[import-untyped] # noqa: F401
-
-        _ATOMWORKS_AVAILABLE = True
-    except ImportError:
-        _ATOMWORKS_AVAILABLE = False
-
 __all__ = [
     "AlphaSphere",
     "Pocket",
