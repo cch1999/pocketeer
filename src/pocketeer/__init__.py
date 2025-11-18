@@ -38,7 +38,10 @@ __all__ = [
 ]
 
 # Add visualization function to __all__ if available
-if _ATOMWORKS_AVAILABLE:
+try:
     from .vis import view_pockets  # noqa: F401
 
     __all__.append("view_pockets")
+except (ImportError, ModuleNotFoundError):
+    # If vis module can't be imported, view_pockets won't be available
+    pass
