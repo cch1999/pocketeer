@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pocketeer"
-version = "0.0.3"
+version = "0.0.4"
 description = "A minimal, fpocket-style pocket finder in pure Python/Numpy."
 readme = "README.md"
 license = { text = "MIT" }
@@ -45,10 +45,10 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/cch1999/pocketeer"
 Repository = "https://github.com/cch1999/pocketeer"
-Documentation = "https://cch1999.github.io/pocketeer"
+Documentation = "https://pocketeer.readthedocs.io"
 Issues = "https://github.com/cch1999/pocketeer/issues"
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "pytest>=7.0",
     "pytest-xdist>=3.8.0",
@@ -84,11 +84,6 @@ exclude = [
     "dist",              # Ignore distribution directories
 ]
 
-
-[tool.mypy]
-python_version = "3.11"
-warn_unused_ignores = true
-strict = true
 
 [tool.pytest.ini_options]
 addopts = "-q"
