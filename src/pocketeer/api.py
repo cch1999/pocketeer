@@ -23,7 +23,7 @@ def find_pockets(
     *,
     r_min: float = 3.0,
     r_max: float = 6.0,
-    polar_probe_radius: float = 1.8,
+    polar_probe_radius: float = 1.4,
     sasa_threshold: float = 20.0,
     merge_distance: float = 1.75,
     min_spheres: int = 35,
