@@ -45,8 +45,9 @@ def find_pockets(
         atomarray: Biotite AtomArray with structure data
         r_min: Minimum alpha-sphere radius (Å). Default: 3.0
         r_max: Maximum alpha-sphere radius (Å). Default: 6.0
-        polar_probe_radius: Radius to test atom contact for polarity (Å). Default: 1.8
-        sasa_threshold: Threshold for SASA value to determine if a sphere is buried (Å²). Default: 20.0
+        polar_probe_radius: Probe radius for SASA calculation (Å). Default: 1.4
+        sasa_threshold: Threshold for SASA value to determine if a sphere is buried (Å²).
+            Default: 20.0
         merge_distance: Distance threshold for merging nearby sphere clusters (Å). Default: 1.75
         min_spheres: Minimum number of spheres per pocket cluster. Default: 35
         ignore_hydrogens: Ignore hydrogen atoms (recommended). Default: True

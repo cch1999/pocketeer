@@ -78,7 +78,9 @@ def detect(
     polar_probe_radius: float = typer.Option(
         1.4, "--polar-probe", help="Probe radius for polarity (Å)"
     ),
-    sasa_threshold: float = typer.Option(20.0, "--sasa-threshold", help="Threshold for SASA value to determine if a sphere is buried (Å²)"),
+    sasa_threshold: float = typer.Option(
+        20.0, "--sasa-threshold", help="SASA threshold for buried spheres (Å²)"
+    ),
     merge_distance: float = typer.Option(
         1.75, "--merge-distance", help="Distance threshold for merging (Å)"
     ),

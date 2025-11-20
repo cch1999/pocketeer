@@ -79,18 +79,18 @@ def label_polarity(
     atomarray: struc.AtomArray,
     polar_probe_radius: float,
 ) -> list[AlphaSphere]:
-    """Label spheres as buried (apolar) or surface (polar) using SASA values.
+    """Calculate mean SASA values for spheres using their defining atoms.
 
-    Uses Solvent Accessible Surface Area (SASA) to determine if a sphere is buried.
-    Spheres are marked as buried if the mean SASA of their defining atoms is below
-    20 Å², indicating they are in the protein interior (apolar regions).
+    Uses Solvent Accessible Surface Area (SASA) to compute the mean SASA
+    of the 4 atoms that define each alpha-sphere. The SASA values are stored
+    in the sphere's mean_sasa attribute for later filtering.
 
     Modifies spheres in place.
 
     Args:
         spheres: list of alpha-spheres
         atomarray: Biotite AtomArray with structure data
-        polar_probe_radius: Probe radius for SASA calculation (Å). Default: 1.8
+        polar_probe_radius: Probe radius for SASA calculation (Å)
     """
     # Calculate SASA once for all atoms
     sasa_values = sasa(atomarray, probe_radius=polar_probe_radius)
@@ -106,7 +106,7 @@ def label_polarity(
 
 def filter_surface_spheres(
     spheres: list[AlphaSphere],
-    sasa_threshold: float = 20.0,   
+    sasa_threshold: float = 20.0,
 ) -> list[AlphaSphere]:
     """Filter to keep only buried (apolar) spheres for pocket detection.
 
