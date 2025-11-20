@@ -3,7 +3,7 @@
 import biotite.structure as struc  # type: ignore
 import numpy as np
 import numpy.typing as npt
-from biotite.structure import sasa
+from biotite.structure import sasa  # type: ignore
 from scipy.spatial import (
     Delaunay,
     cKDTree,  # type: ignore
@@ -99,7 +99,7 @@ def label_polarity(
     for sphere in spheres:
         # Get SASA values for the atoms that define this sphere
         defining_sasa = sasa_values[sphere.atom_indices]
-        sphere.mean_sasa = np.mean(defining_sasa)
+        sphere.mean_sasa = float(np.mean(defining_sasa))
 
     return spheres
 
