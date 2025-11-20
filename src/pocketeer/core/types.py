@@ -18,7 +18,7 @@ class AlphaSphere:
     sphere_id: int  # unique identifier (NOT list index)
     center: npt.NDArray[np.float64]  # 3D coordinates
     radius: float
-    is_buried: bool  # True if buried (apolar), False if near surface (polar)
+    mean_sasa: float  # Mean SASA of the sphere's defining atoms
     atom_indices: list[int]  # indices of the 4 Delaunay vertices
 
     def to_dict(self) -> dict[str, Any]:
@@ -27,7 +27,8 @@ class AlphaSphere:
             "sphere_id": self.sphere_id,
             "center": self.center.tolist(),
             "radius": float(self.radius),
-            "is_buried": bool(self.is_buried),
+            "mean_sasa": float(self.mean_sasa),
+            "atom_indices": self.atom_indices,
         }
 
 

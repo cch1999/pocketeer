@@ -54,7 +54,7 @@ def test_view_pockets_invalid_input():
                     sphere_id=0,
                     center=np.array([0, 0, 0]),
                     radius=2.0,
-                    is_buried=False,
+                    mean_sasa=10.0,
                     atom_indices=[0, 1, 2, 3],
                 )
             ],
@@ -94,7 +94,7 @@ def test_view_pockets_invalid_color_scheme():
                     sphere_id=0,
                     center=np.array([0, 0, 0]),
                     radius=2.0,
-                    is_buried=False,
+                    mean_sasa=10.0,
                     atom_indices=[0, 1, 2, 3],
                 )
             ],
@@ -168,7 +168,7 @@ def test_view_pockets_color_schemes():
                     sphere_id=0,
                     center=np.array([0, 0, 0]),
                     radius=2.0,
-                    is_buried=False,
+                    mean_sasa=10.0,
                     atom_indices=[0, 1, 2, 3],
                 )
             ],
@@ -183,7 +183,7 @@ def test_view_pockets_color_schemes():
                     sphere_id=1,
                     center=np.array([2, 0, 0]),
                     radius=1.5,
-                    is_buried=False,
+                    mean_sasa=8.0,
                     atom_indices=[4, 5, 6, 7],
                 )
             ],

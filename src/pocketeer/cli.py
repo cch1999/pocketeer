@@ -76,7 +76,10 @@ def detect(
     r_min: float = typer.Option(3.0, "--r-min", help="Minimum sphere radius (Å)"),
     r_max: float = typer.Option(6.0, "--r-max", help="Maximum sphere radius (Å)"),
     polar_probe_radius: float = typer.Option(
-        1.8, "--polar-probe", help="Probe radius for polarity (Å)"
+        1.4, "--polar-probe", help="Probe radius for polarity (Å)"
+    ),
+    sasa_threshold: float = typer.Option(
+        20.0, "--sasa-threshold", help="SASA threshold for buried spheres (Å²)"
     ),
     merge_distance: float = typer.Option(
         1.75, "--merge-distance", help="Distance threshold for merging (Å)"
@@ -117,6 +120,7 @@ def detect(
             r_min=r_min,
             r_max=r_max,
             polar_probe_radius=polar_probe_radius,
+            sasa_threshold=sasa_threshold,
             merge_distance=merge_distance,
             min_spheres=min_spheres,
             ignore_hydrogens=ignore_hydrogens,
