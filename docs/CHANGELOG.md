@@ -5,7 +5,7 @@ All notable changes to pocketeer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - 2025-11-13
+## [0.0.0] - 2025-11-13
 
 ### Added
 - Initial release of pocketeer
@@ -21,12 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 - `find_pockets()` - Main API function
-<<<<<<< Updated upstream
-- `view_pockets()` - Visualize detected pockets in 3D (if `atomworks` is installed)
-- `load_pockets()` - Load precomputed pockets from file (JSON/PDB/TXT)
-- Simple visualization and reloading workflow for pocket results
-=======
->>>>>>> Stashed changes
 - `AlphaSphere` and `Pocket` data types
 - Multiple output formats (PDB, JSON, TXT)
 - Clean, minimal dependencies (numpy, scipy, numba, typer)
@@ -39,3 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [0.1.0]: https://github.com/cch1999/pocketeer/releases/tag/v0.1.0
 
+
+## 0.0.3
+
+### Fixes
+- Fixed `view_pockets` import error
