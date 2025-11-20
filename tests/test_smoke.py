@@ -45,12 +45,13 @@ def test_find_pockets_too_few():
 def test_params_validation():
     """Test parameter validation."""
     # Create a valid structure for testing
+    # Note: SASA calculation requires res_name and atom_name to be set
     atoms = struc.array(
         [
-            struc.Atom([0, 0, 0], element="C"),
-            struc.Atom([1, 0, 0], element="C"),
-            struc.Atom([0, 1, 0], element="C"),
-            struc.Atom([0, 0, 1], element="C"),
+            struc.Atom([0, 0, 0], element="C", res_name="GLY", atom_name="CA"),
+            struc.Atom([1, 0, 0], element="C", res_name="GLY", atom_name="CA"),
+            struc.Atom([0, 1, 0], element="C", res_name="GLY", atom_name="CA"),
+            struc.Atom([0, 0, 1], element="C", res_name="GLY", atom_name="CA"),
         ]
     )
 
