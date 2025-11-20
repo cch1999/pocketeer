@@ -1,10 +1,14 @@
 """Visualization utilities for pocketeer using atomworks."""
 
 import colorsys
+import contextlib
 from typing import Any
 
 import biotite.structure as struc  # type: ignore
-from atomworks.io.utils.visualize import view  # type: ignore[import-untyped]
+
+# Suppress Atomworks import messages about env variables
+with contextlib.redirect_stdout(None), contextlib.redirect_stderr(None):
+    from atomworks.io.utils.visualize import view  # type: ignore[import-untyped]
 
 from pocketeer.core.types import Pocket
 
