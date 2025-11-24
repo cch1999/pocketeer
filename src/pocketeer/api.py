@@ -23,7 +23,8 @@ def find_pockets(
     *,
     r_min: float = 3.0,
     r_max: float = 6.0,
-    polar_probe_radius: float = 1.8,
+    polar_probe_radius: float = 1.4,
+    sasa_threshold: float = 20.0,
     merge_distance: float = 1.75,
     min_spheres: int = 35,
     ignore_hydrogens: bool = True,
@@ -44,7 +45,11 @@ def find_pockets(
         atomarray: Biotite AtomArray with structure data
         r_min: Minimum alpha-sphere radius (Å). Default: 3.0
         r_max: Maximum alpha-sphere radius (Å). Default: 6.0
-        polar_probe_radius: Radius to test atom contact for polarity (Å). Default: 1.8
+        polar_probe_radius: Probe radius for SASA calculation (Å). Default: 1.4
+        sasa_threshold: Threshold for mean SASA value to determine if a sphere is buried (Å²).
+            Spheres with mean SASA below this threshold are considered buried (interior) and
+            kept for pocket detection. Higher values include more surface-exposed spheres.
+            Typical range: 15-30 Å². Default: 20.0
         merge_distance: Distance threshold for merging nearby sphere clusters (Å). Default: 1.75
         min_spheres: Minimum number of spheres per pocket cluster. Default: 35
         ignore_hydrogens: Ignore hydrogen atoms (recommended). Default: True
@@ -71,6 +76,8 @@ def find_pockets(
         raise ValueError(f"Invalid radius range: r_min={r_min}, r_max={r_max}")
     if polar_probe_radius <= 0:
         raise ValueError(f"polar_probe_radius must be > 0, got {polar_probe_radius}")
+    if sasa_threshold <= 0:
+        raise ValueError(f"sasa_threshold must be > 0, got {sasa_threshold}")
 
     # Input validation
     if not isinstance(atomarray, struc.AtomArray):
@@ -97,8 +104,8 @@ def find_pockets(
     logger.info(f"Computed {len(alpha_spheres)} alpha-spheres")
 
     # 2. Label spheres as buried or surface and filter
-    alpha_spheres = label_polarity(alpha_spheres, atomarray.coord, polar_probe_radius)
-    buried_spheres = filter_surface_spheres(alpha_spheres)
+    alpha_spheres = label_polarity(alpha_spheres, atomarray, polar_probe_radius)
+    buried_spheres = filter_surface_spheres(alpha_spheres, sasa_threshold=sasa_threshold)
     logger.info(f"Found {len(buried_spheres)} buried spheres")
 
     if not buried_spheres:

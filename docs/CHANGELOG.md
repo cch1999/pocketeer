@@ -5,6 +5,17 @@ All notable changes to pocketeer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2025-11-24
+
+### Added
+- `sasa_threshold` parameter to `find_pockets()` for filtering buried vs surface-exposed spheres
+- SASA (Solvent Accessible Surface Area) calculation using `polar_probe_radius` to distinguish interior pockets from surface features
+- Enhanced documentation for SASA threshold parameter across all documentation files
+
+### Changed
+- Default `polar_probe_radius` corrected to 1.4 Å (was incorrectly documented as 1.8 Å)
+- Default `merge_distance` corrected to 1.75 Å (was incorrectly documented as 1.2 Å)
+
 ## [0.0.0] - 2025-11-13
 
 ### Added

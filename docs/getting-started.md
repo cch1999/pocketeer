@@ -68,6 +68,7 @@ pockets = pt.find_pockets(
     r_max=6.0,           # Maximum sphere radius (Å)
     min_spheres=30,      # Minimum spheres per pocket cluster
     merge_distance=2.5,  # Distance threshold for clustering
+    sasa_threshold=25.0,  # SASA threshold for buried spheres (Å²)
 )
 
 print(f"Found {len(pockets)} pockets")
@@ -108,9 +109,16 @@ for pocket in pockets:
 
 ### Polarity Parameters
 
-- **`polar_probe_radius`** (default: 1.8 Å): Radius for detecting surface vs buried spheres
-  - Used to distinguish interior cavities from surface features
-  - Should be similar to water molecule radius
+- **`polar_probe_radius`** (default: 1.4 Å): Probe radius for SASA calculation
+  - Used to compute solvent accessible surface area (SASA) of atoms
+  - Should be similar to water molecule radius (~1.4 Å)
+  - Lower values give more detailed surface calculations
+
+- **`sasa_threshold`** (default: 20.0 Å²): Threshold for mean SASA to determine if a sphere is buried
+  - Spheres with mean SASA below this threshold are considered buried (interior) and kept
+  - Higher values include more surface-exposed spheres in pocket detection
+  - Lower values filter more aggressively, keeping only deeply buried spheres
+  - Typical range: 15-30 Å²
 
 ## Saving Results
 

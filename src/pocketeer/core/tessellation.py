@@ -1,7 +1,9 @@
 """Alpha-sphere computation, filtering, and sphere-specific operations."""
 
+import biotite.structure as struc  # type: ignore
 import numpy as np
 import numpy.typing as npt
+from biotite.structure import sasa  # type: ignore
 from scipy.spatial import (
     Delaunay,
     cKDTree,  # type: ignore
@@ -64,7 +66,7 @@ def compute_alpha_spheres(
                 sphere_id=sphere_id,
                 center=center,
                 radius=radius,
-                is_buried=True,  # will be determined in next step
+                mean_sasa=0.0,  # will be determined in next step
                 atom_indices=simplex.tolist(),
             )
         )
@@ -74,45 +76,50 @@ def compute_alpha_spheres(
 
 def label_polarity(
     spheres: list[AlphaSphere],
-    coords: npt.NDArray[np.float64],
+    atomarray: struc.AtomArray,
     polar_probe_radius: float,
 ) -> list[AlphaSphere]:
-    """Label spheres as buried (apolar) or surface (polar).
+    """Calculate mean SASA values for spheres using their defining atoms.
+
+    Uses Solvent Accessible Surface Area (SASA) to compute the mean SASA
+    of the 4 atoms that define each alpha-sphere. The SASA values are stored
+    in the sphere's mean_sasa attribute for later filtering.
 
     Modifies spheres in place.
 
     Args:
         spheres: list of alpha-spheres
-        coords: (N, 3) atom coordinates
-        polar_probe_radius: Radius to test atom contact for polarity (Å)
+        atomarray: Biotite AtomArray with structure data
+        polar_probe_radius: Probe radius for SASA calculation (Å)
     """
+    # Calculate SASA once for all atoms
+    sasa_values = sasa(atomarray, probe_radius=polar_probe_radius)
 
-    # Build KD-tree for fast nearest-neighbor queries
-    tree = cKDTree(coords)
-
-    # For each sphere, check if it's within probe radius of any atom
+    # For each sphere, compute mean SASA of its 4 defining atoms
     for sphere in spheres:
-        # Query for atoms within probe radius
-        indices = tree.query_ball_point(sphere.center, polar_probe_radius)
-
-        # If close to atoms beyond the defining vertices, it's surface (polar)
-        defining_atoms = set(sphere.atom_indices)
-        close_atoms = set(indices) - defining_atoms
-
-        sphere.is_buried = len(close_atoms) == 0
+        # Get SASA values for the atoms that define this sphere
+        defining_sasa = sasa_values[sphere.atom_indices]
+        sphere.mean_sasa = float(np.mean(defining_sasa))
 
     return spheres
 
 
 def filter_surface_spheres(
     spheres: list[AlphaSphere],
+    sasa_threshold: float = 20.0,
 ) -> list[AlphaSphere]:
-    """Filter to keep only buried (apolar) spheres for pocket detection.
+    """Filter to keep only buried (interior) spheres for pocket detection.
+
+    Uses the mean SASA (solvent accessible surface area) of the 4 atoms defining
+    each sphere to determine if it's buried or surface-exposed. Spheres with
+    mean SASA below the threshold are considered buried and kept for pocket detection.
 
     Args:
-        spheres: list of all alpha-spheres
+        spheres: list of all alpha-spheres with computed mean_sasa values
+        sasa_threshold: Threshold for mean SASA value to determine if a sphere is buried (Å²).
+            Spheres with mean_sasa < sasa_threshold are kept. Typical values: 15-30 Å².
 
     Returns:
-        List of buried spheres only
+        List of buried spheres only (those with mean_sasa < sasa_threshold)
     """
-    return [s for s in spheres if s.is_buried]
+    return [s for s in spheres if s.mean_sasa < sasa_threshold]

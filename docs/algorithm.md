@@ -14,7 +14,8 @@ Pocketeer detects pockets in proteins using a simple, fast approach based on geo
 - **Radius range (`r_min`, `r_max`)**: Sets the smallest and largest spheres to try; usually around 3-6 Å for most proteins.
 - **Cluster size (`min_spheres`)**: Minimum number of spheres to call something a pocket.
 - **Merge distance**: How close spheres need to be to be grouped into a pocket.
-- **Polarity probe radius**: Determines if a sphere is inside the protein (buried) or at the surface.
+- **Polarity probe radius (`polar_probe_radius`)**: Probe radius used to compute solvent accessible surface area (SASA) of atoms. Default: 1.4 Å (similar to water molecule radius).
+- **SASA threshold (`sasa_threshold`)**: Threshold for mean SASA value to determine if a sphere is buried. Spheres with mean SASA below this threshold (typically < 20 Å²) are considered buried (interior) and kept for pocket detection. Higher values include more surface-exposed spheres.
 
 ## When to Use
 
