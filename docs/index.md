@@ -77,9 +77,10 @@ Pocketeer implements a simplified version of the fpocket algorithm:
 
 1. **Delaunay Tessellation** - Compute Delaunay triangulation of protein atoms
 2. **Alpha-Sphere Detection** - Extract circumspheres of tetrahedra within radius bounds
-3. **Polarity Labeling** - Classify spheres as buried (interior) or surface
-4. **Clustering** - Group buried spheres into pockets using graph connectivity
-5. **Scoring** - Rank pockets by volume and geometric features
+3. **Polarity Labeling** - Calculate SASA (solvent accessible surface area) for atoms defining each sphere
+4. **Surface Filtering** - Filter to buried spheres using SASA threshold (spheres with mean SASA < threshold)
+5. **Clustering** - Group buried spheres into pockets using graph connectivity
+6. **Scoring** - Rank pockets by volume and geometric features
 
 ## Limitations
 
