@@ -108,13 +108,18 @@ def filter_surface_spheres(
     spheres: list[AlphaSphere],
     sasa_threshold: float = 20.0,
 ) -> list[AlphaSphere]:
-    """Filter to keep only buried (apolar) spheres for pocket detection.
+    """Filter to keep only buried (interior) spheres for pocket detection.
+
+    Uses the mean SASA (solvent accessible surface area) of the 4 atoms defining
+    each sphere to determine if it's buried or surface-exposed. Spheres with
+    mean SASA below the threshold are considered buried and kept for pocket detection.
 
     Args:
-        spheres: list of all alpha-spheres
-        sasa_threshold: Threshold for SASA value to determine if a sphere is buried (Å²)
+        spheres: list of all alpha-spheres with computed mean_sasa values
+        sasa_threshold: Threshold for mean SASA value to determine if a sphere is buried (Å²).
+            Spheres with mean_sasa < sasa_threshold are kept. Typical values: 15-30 Å².
 
     Returns:
-        List of buried spheres only
+        List of buried spheres only (those with mean_sasa < sasa_threshold)
     """
     return [s for s in spheres if s.mean_sasa < sasa_threshold]
