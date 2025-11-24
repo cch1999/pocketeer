@@ -47,6 +47,27 @@ def test_find_pockets_ignore_hetero(load_test_structure):
     assert len(pockets_no_hetero) != len(pockets_with_hetero)
 
 
+def test_find_pockets_sasa_threshold(load_test_structure):
+    """Test that sasa_threshold filters spheres correctly."""
+    # Lower threshold should filter more aggressively (fewer pockets)
+    pockets_low = find_pockets(load_test_structure, sasa_threshold=10.0)
+    # Higher threshold should include more spheres (more or equal pockets)
+    pockets_high = find_pockets(load_test_structure, sasa_threshold=30.0)
+    # Default threshold
+    pockets_default = find_pockets(load_test_structure, sasa_threshold=20.0)
+
+    assert isinstance(pockets_low, list)
+    assert isinstance(pockets_high, list)
+    assert isinstance(pockets_default, list)
+
+    # Higher threshold should generally find more or equal pockets
+    # (more surface-exposed spheres are included)
+    assert len(pockets_high) >= len(pockets_low), (
+        f"Expected higher threshold (30.0) to find >= pockets than lower (10.0), "
+        f"but found {len(pockets_high)} vs {len(pockets_low)}"
+    )
+
+
 def test_write_individual_pocket_jsons(tmp_path, load_test_structure):
     """Pocket JSONs should use 1-based numbering."""
     pockets = find_pockets(load_test_structure)
