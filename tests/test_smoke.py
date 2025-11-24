@@ -70,3 +70,7 @@ def test_params_validation():
     # Invalid params - negative polar_probe_radius
     with pytest.raises(ValueError, match="polar_probe_radius must be > 0"):
         find_pockets(atoms, polar_probe_radius=-1.0)
+
+    # Invalid params - negative sasa_threshold
+    with pytest.raises(ValueError, match="sasa_threshold must be > 0"):
+        find_pockets(atoms, sasa_threshold=-1.0)
