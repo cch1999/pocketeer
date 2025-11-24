@@ -46,8 +46,10 @@ def find_pockets(
         r_min: Minimum alpha-sphere radius (Å). Default: 3.0
         r_max: Maximum alpha-sphere radius (Å). Default: 6.0
         polar_probe_radius: Probe radius for SASA calculation (Å). Default: 1.4
-        sasa_threshold: Threshold for SASA value to determine if a sphere is buried (Å²).
-            Default: 20.0
+        sasa_threshold: Threshold for mean SASA value to determine if a sphere is buried (Å²).
+            Spheres with mean SASA below this threshold are considered buried (interior) and
+            kept for pocket detection. Higher values include more surface-exposed spheres.
+            Typical range: 15-30 Å². Default: 20.0
         merge_distance: Distance threshold for merging nearby sphere clusters (Å). Default: 1.75
         min_spheres: Minimum number of spheres per pocket cluster. Default: 35
         ignore_hydrogens: Ignore hydrogen atoms (recommended). Default: True
