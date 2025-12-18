@@ -3,7 +3,6 @@
 import biotite.structure as struc
 import pytest
 
-import pocketeer
 from pocketeer import find_pockets
 from pocketeer.utils import ValidationError
 
