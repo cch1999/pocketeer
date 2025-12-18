@@ -86,6 +86,9 @@ def find_pockets(
     if len(atomarray) == 0:
         raise ValidationError("AtomArray is empty")
 
+    # Store original atomarray for mask creation (before filtering)
+    original_atomarray = atomarray
+
     if ignore_hydrogens:
         atomarray = atomarray[atomarray.element != "H"]
 
@@ -123,8 +126,9 @@ def find_pockets(
         return []
 
     # Create Pocket objects with descriptors
+    # Pass filtered atomarray for residue extraction, original for mask creation
     pockets = [
-        create_pocket(pocket_id, cluster, atomarray)
+        create_pocket(pocket_id, cluster, atomarray, original_atomarray)
         for pocket_id, cluster in enumerate(pocket_clusters)
     ]
 

@@ -42,6 +42,7 @@ class Pocket:
     volume: float  # estimated volume in A³
     score: float  # druggability/quality score
     residues: list[tuple[str, int, str]]  # unique residues as (chain_id, res_id, res_name) tuples
+    mask: npt.NDArray[np.bool_]  # boolean mask for selecting atoms in pocket residues
 
     @property
     def sphere_ids(self) -> list[int]:

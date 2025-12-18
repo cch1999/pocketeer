@@ -47,6 +47,34 @@ def extract_pocket_residues(
     return sorted(residue_set)
 
 
+def create_residue_mask(
+    residues: list[tuple[str, int, str]],
+    atomarray: struc.AtomArray,
+) -> np.ndarray:
+    """Create a boolean mask for atoms belonging to pocket residues.
+
+    Args:
+        residues: List of residues as (chain_id, res_id, res_name) tuples
+        atomarray: Biotite AtomArray with structure data
+
+    Returns:
+        Boolean numpy array where True indicates the atom belongs to a residue in the pocket
+    """
+    # Convert residues to a set for fast lookup
+    residue_set = set(residues)
+
+    # Create mask by checking if each atom's residue is in the pocket
+    mask = np.zeros(len(atomarray), dtype=bool)
+    for i in range(len(atomarray)):
+        chain_id = str(atomarray.chain_id[i])
+        res_id = int(atomarray.res_id[i])
+        res_name = str(atomarray.res_name[i])
+        if (chain_id, res_id, res_name) in residue_set:
+            mask[i] = True
+
+    return mask
+
+
 def score_pocket(
     pocket: Pocket,
 ) -> float:
@@ -81,13 +109,16 @@ def create_pocket(
     pocket_id: int,
     pocket_spheres: list[AlphaSphere],
     atomarray: struc.AtomArray,
+    original_atomarray: struc.AtomArray | None = None,
 ) -> Pocket:
     """Create a Pocket object with computed descriptors.
 
     Args:
         pocket_id: unique pocket identifier
         pocket_spheres: list of spheres in this pocket
-        atomarray: AtomArray to extract residue information
+        atomarray: Filtered AtomArray to extract residue information
+        original_atomarray: Original AtomArray before filtering for mask creation.
+            If None, mask will be created from atomarray.
 
     Returns:
         Pocket object with descriptors
@@ -100,8 +131,13 @@ def create_pocket(
     centers = np.array([sphere.center for sphere in pocket_spheres])
     centroid = centers.mean(axis=0).astype(np.float64)
 
-    # Extract residues from atomarray
+    # Extract residues from filtered atomarray
     residues = extract_pocket_residues(pocket_spheres, atomarray)
+
+    # Create residue mask for easy selection
+    # Use original atomarray if provided, otherwise use filtered atomarray
+    mask_atomarray = original_atomarray if original_atomarray is not None else atomarray
+    mask = create_residue_mask(residues, mask_atomarray)
 
     # Create pocket
     pocket = Pocket(
@@ -111,6 +147,7 @@ def create_pocket(
         volume=volume,
         score=0.0,  # computed after creation
         residues=residues,
+        mask=mask,
     )
 
     # Score the pocket
