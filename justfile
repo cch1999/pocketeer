@@ -38,6 +38,9 @@ all:
 sync:
     uv sync --all-extras
 
+benchmark:
+    uv run experiments/benchmark.py
+
 # Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
