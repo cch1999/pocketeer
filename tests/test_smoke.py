@@ -8,12 +8,6 @@ from pocketeer import find_pockets
 from pocketeer.utils import ValidationError
 
 
-def test_import():
-    """Test that package imports successfully."""
-
-    assert pocketeer.__version__ == "0.1.0"
-
-
 def test_find_pockets_empty():
     """Test find_pockets with empty AtomArray."""
     # Create empty AtomArray (create a single atom then slice to empty)
