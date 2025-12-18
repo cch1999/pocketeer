@@ -45,3 +45,4 @@ site/
 uv.lock
 dev.ipynb
 4tos.pdb
+experiments/*
