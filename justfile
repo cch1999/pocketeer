@@ -34,6 +34,9 @@ all:
     interrogate src/ -v
     pytest tests/ -n=auto -v  
 
+# Sync uv 
+sync:
+    uv sync --all-extras
 
 # Delete all compiled Python files
 clean:
