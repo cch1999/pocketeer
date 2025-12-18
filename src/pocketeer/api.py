@@ -124,7 +124,8 @@ def find_pockets(
 
     # Create Pocket objects with descriptors
     pockets = [
-        create_pocket(pocket_id, cluster) for pocket_id, cluster in enumerate(pocket_clusters)
+        create_pocket(pocket_id, cluster, atomarray)
+        for pocket_id, cluster in enumerate(pocket_clusters)
     ]
 
     # Sort by score (descending)

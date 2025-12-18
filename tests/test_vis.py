@@ -61,6 +61,7 @@ def test_view_pockets_invalid_input():
             centroid=np.array([0, 0, 0]),
             volume=100.0,
             score=1.0,
+            residues=[],
         )
     ]
 
@@ -101,6 +102,7 @@ def test_view_pockets_invalid_color_scheme():
             centroid=np.array([0, 0, 0]),
             volume=100.0,
             score=1.0,
+            residues=[],
         )
     ]
 
@@ -175,6 +177,7 @@ def test_view_pockets_color_schemes():
             centroid=np.array([0, 0, 0]),
             volume=100.0,
             score=1.0,
+            residues=[],
         ),
         Pocket(
             pocket_id=2,
@@ -190,6 +193,7 @@ def test_view_pockets_color_schemes():
             centroid=np.array([2, 0, 0]),
             volume=80.0,
             score=0.8,
+            residues=[],
         ),
     ]
 
