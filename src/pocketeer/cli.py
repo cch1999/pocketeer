@@ -58,12 +58,14 @@ def _make_table(pockets: list[Pocket]) -> Table:
     table.add_column("Score", style="magenta", justify="center")
     table.add_column("Volume (A³)", style="green", justify="center")
     table.add_column("Spheres", style="yellow", justify="center")
+    table.add_column("Residues", style="blue", justify="center")
     for pocket in pockets:
         table.add_row(
             str(pocket.pocket_id),
             f"{pocket.score:.2f}",
             f"{pocket.volume:.1f}",
             str(pocket.n_spheres),
+            str(len(pocket.residues)),
         )
     return table
 

@@ -286,6 +286,18 @@ def write_summary(
             f.write(f"  Score: {pocket.score:.2f}\n")
             f.write(f"  Volume: {pocket.volume:.1f} A³\n")
             f.write(f"  Spheres: {pocket.n_spheres}\n")
+            f.write(f"  Residues: {len(pocket.residues)}\n")
+            if pocket.residues:
+                # Show first 10 residues, or all if fewer than 10
+                MAX_RESIDUES_TO_SHOW = 10
+                residue_strs = [
+                    f"{res_name}{chain_id}{res_id}"
+                    for chain_id, res_id, res_name in pocket.residues[:MAX_RESIDUES_TO_SHOW]
+                ]
+                f.write(f"    {', '.join(residue_strs)}")
+                if len(pocket.residues) > MAX_RESIDUES_TO_SHOW:
+                    f.write(f" ... ({len(pocket.residues) - MAX_RESIDUES_TO_SHOW} more)")
+                f.write("\n")
             f.write(
                 f"  Centroid: ({pocket.centroid[0]:.1f}, "
                 f"{pocket.centroid[1]:.1f}, {pocket.centroid[2]:.1f})\n"
