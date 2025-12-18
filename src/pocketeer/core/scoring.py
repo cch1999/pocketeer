@@ -60,17 +60,21 @@ def create_residue_mask(
     Returns:
         Boolean numpy array where True indicates the atom belongs to a residue in the pocket
     """
-    # Convert residues to a set for fast lookup
-    residue_set = set(residues)
+    # Create string identifiers for fast vectorized lookup
+    # Format: "chain_id:res_id:res_name" for efficient comparison
+    residue_ids = {f"{cid}:{rid}:{rname}" for cid, rid, rname in residues}
 
-    # Create mask by checking if each atom's residue is in the pocket
-    mask = np.zeros(len(atomarray), dtype=bool)
-    for i in range(len(atomarray)):
-        chain_id = str(atomarray.chain_id[i])
-        res_id = int(atomarray.res_id[i])
-        res_name = str(atomarray.res_name[i])
-        if (chain_id, res_id, res_name) in residue_set:
-            mask[i] = True
+    # Extract arrays and create identifiers for all atoms using vectorized operations
+    chain_ids = atomarray.chain_id.astype(str)
+    res_ids = atomarray.res_id.astype(int).astype(str)
+    res_names = atomarray.res_name.astype(str)
+
+    # Create identifiers for all atoms using vectorized string concatenation
+    atom_ids = np.char.add(np.char.add(chain_ids, ":"), np.char.add(res_ids, ":"))
+    atom_ids = np.char.add(atom_ids, res_names)
+
+    # Vectorized membership check using numpy's isin (highly optimized)
+    mask = np.isin(atom_ids, list(residue_ids))
 
     return mask
 

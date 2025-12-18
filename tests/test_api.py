@@ -1,5 +1,6 @@
 import re
 
+import numpy as np
 import pytest
 
 from pocketeer import find_pockets, load_structure, write_individual_pocket_jsons
@@ -100,3 +101,28 @@ def test_write_individual_pocket_jsons(tmp_path, load_test_structure):
                 f"File {filename} uses unexpected numbering. "
                 f"Expected files: {sorted(expected_numbers)}"
             )
+
+
+def test_pocket_mask(load_test_structure):
+    """Test that pocket mask correctly selects atoms from original atomarray."""
+    original_atomarray = load_test_structure
+    pockets = find_pockets(original_atomarray)
+
+    if not pockets:
+        pytest.skip("No pockets found for mask testing")
+
+    # Test the first pocket
+    pocket = pockets[0]
+
+    # Verify mask exists and has correct type
+    assert hasattr(pocket, "mask"), "Pocket should have a mask attribute"
+    assert isinstance(pocket.mask, np.ndarray), "Mask should be a numpy array"
+    assert pocket.mask.dtype == bool, "Mask should be boolean"
+    assert len(pocket.mask) == len(original_atomarray), (
+        f"Mask length ({len(pocket.mask)}) should match original atomarray length "
+        f"({len(original_atomarray)})"
+    )
+
+    # Verify mask can be used to select atoms
+    pocket_atoms = original_atomarray[pocket.mask]
+    assert len(pocket_atoms) > 0, "Mask should select at least some atoms"
