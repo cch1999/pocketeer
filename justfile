@@ -41,6 +41,9 @@ sync:
 benchmark:
     uv run experiments/benchmark.py
 
+analyze_pocket_properties:
+    uv run --with pandas,matplotlib,seaborn,rich experiments/analyze_pocket_properties.py
+
 # Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
