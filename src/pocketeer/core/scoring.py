@@ -1,6 +1,7 @@
 """Pocket creation, scoring, and management."""
 
 import logging
+from dataclasses import replace
 
 import biotite.structure as struc  # type: ignore
 import numpy as np
@@ -149,12 +150,11 @@ def create_pocket(
         spheres=pocket_spheres,
         centroid=centroid,
         volume=volume,
-        score=0.0,  # computed after creation
+        score=0.0,  # placeholder, filled below
         residues=residues,
         mask=mask,
     )
 
-    # Score the pocket
-    pocket.score = score_pocket(pocket)
-
-    return pocket
+    # Score the pocket and create final frozen instance
+    score = score_pocket(pocket)
+    return replace(pocket, score=score)

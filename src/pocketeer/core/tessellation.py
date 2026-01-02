@@ -1,5 +1,7 @@
 """Alpha-sphere computation, filtering, and sphere-specific operations."""
 
+from dataclasses import replace
+
 import biotite.structure as struc  # type: ignore
 import numpy as np
 import numpy.typing as npt
@@ -96,12 +98,14 @@ def label_polarity(
     sasa_values = sasa(atomarray, probe_radius=polar_probe_radius)
 
     # For each sphere, compute mean SASA of its 4 defining atoms
+    labeled_spheres = []
     for sphere in spheres:
         # Get SASA values for the atoms that define this sphere
         defining_sasa = sasa_values[sphere.atom_indices]
-        sphere.mean_sasa = float(np.mean(defining_sasa))
+        mean_sasa = float(np.mean(defining_sasa))
+        labeled_spheres.append(replace(sphere, mean_sasa=mean_sasa))
 
-    return spheres
+    return labeled_spheres
 
 
 def filter_surface_spheres(

@@ -7,7 +7,7 @@ import numpy as np
 import numpy.typing as npt
 
 
-@dataclass
+@dataclass(frozen=True)
 class AlphaSphere:
     """Represents a single alpha-sphere from Delaunay tessellation.
 
@@ -32,7 +32,7 @@ class AlphaSphere:
         }
 
 
-@dataclass
+@dataclass(frozen=True)
 class Pocket:
     """Represents a detected pocket (cluster of alpha-spheres)."""
 
