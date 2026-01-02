@@ -46,3 +46,5 @@ uv.lock
 dev.ipynb
 4tos.pdb
 experiments/*
+results/*
+plots/*
