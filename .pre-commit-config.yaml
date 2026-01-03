@@ -1,0 +1,32 @@
+repos:
+
+  # Ruff for linting and formatting 
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.15
+    hooks:
+      # Run the linter
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      # Run the formatter
+      - id: ruff-format
+
+  # Type checking with ty
+  - repo: local
+    hooks:
+      - id: ty-check
+        name: ty check
+        entry: ty check src/pocketeer
+        language: system
+        types: [python]
+        pass_filenames: false
+
+  # Docstring coverage check
+  - repo: local
+    hooks:
+      - id: interrogate
+        name: interrogate docstring coverage
+        entry: interrogate src/ -v
+        language: system
+        types: [python]
+        pass_filenames: false
+
