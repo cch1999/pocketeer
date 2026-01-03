@@ -1,7 +1,6 @@
 """Core data types for pocketeer."""
 
 from dataclasses import dataclass
-from typing import Any
 
 import numpy as np
 import numpy.typing as npt
@@ -20,16 +19,6 @@ class AlphaSphere:
     radius: float
     mean_sasa: float  # Mean SASA of the sphere's defining atoms
     atom_indices: list[int]  # indices of the 4 Delaunay vertices
-
-    def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for JSON serialization."""
-        return {
-            "sphere_id": self.sphere_id,
-            "center": self.center.tolist(),
-            "radius": float(self.radius),
-            "mean_sasa": float(self.mean_sasa),
-            "atom_indices": self.atom_indices,
-        }
 
 
 @dataclass(frozen=True)
@@ -65,19 +54,3 @@ class Pocket:
             f"score={self.score:.2f}, n_spheres={self.n_spheres}, "
             f"n_residues={len(self.residues)})"
         )
-
-    def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for JSON serialization."""
-        return {
-            "pocket_id": self.pocket_id,
-            "centroid": self.centroid.tolist(),
-            "volume": float(self.volume),
-            "score": float(self.score),
-            "n_spheres": self.n_spheres,
-            "n_residues": len(self.residues),
-            "residues": [
-                {"chain_id": chain_id, "res_id": res_id, "res_name": res_name}
-                for chain_id, res_id, res_name in self.residues
-            ],
-            "spheres": [sphere.to_dict() for sphere in self.spheres],
-        }

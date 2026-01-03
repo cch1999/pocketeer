@@ -1,9 +1,12 @@
 """I/O utilities for structure reading/writing and results export."""
 
 import json
+from dataclasses import asdict
 from pathlib import Path
+from typing import Any
 
 import biotite.structure as struc  # type: ignore
+import numpy as np
 from biotite.structure.io import mol, pdb, pdbx  # type: ignore
 
 from ..core.types import Pocket
@@ -213,6 +216,69 @@ def write_pockets_as_pdb(
         f.write("END\n")
 
 
+def _to_json_serializable(obj: Any) -> Any:
+    """Recursively convert numpy types and other objects to JSON-serializable types.
+
+    Uses dataclasses.asdict() for dataclass instances and handles numpy arrays,
+    numpy scalars, and other non-serializable types.
+
+    Args:
+        obj: Object to convert (can be dict, list, dataclass, numpy array, etc.)
+
+    Returns:
+        JSON-serializable representation of the object
+    """
+    # Handle numpy types
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    if isinstance(obj, (np.integer, np.floating, np.bool_)):
+        return obj.item() if not isinstance(obj, np.bool_) else bool(obj)
+
+    # Handle collections and dataclasses
+    if isinstance(obj, dict):
+        return {key: _to_json_serializable(value) for key, value in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_to_json_serializable(item) for item in obj]
+    if hasattr(obj, "__dataclass_fields__"):
+        return _to_json_serializable(asdict(obj))
+
+    return obj
+
+
+def _pocket_to_dict(pocket: Pocket) -> dict[str, Any]:
+    """Convert Pocket to dictionary for JSON serialization.
+
+    Uses dataclasses.asdict() as a base and applies custom transformations:
+    - Excludes the 'mask' field (not serialized)
+    - Converts residue tuples to dictionaries
+    - Includes computed properties (n_spheres, n_residues)
+
+    Args:
+        pocket: Pocket instance to serialize
+
+    Returns:
+        Dictionary representation suitable for JSON serialization
+    """
+    # Use asdict() to get base dictionary
+    data = asdict(pocket)
+
+    # Remove mask field (not serialized)
+    data.pop("mask", None)
+
+    # Convert residue tuples to dictionaries
+    data["residues"] = [
+        {"chain_id": chain_id, "res_id": res_id, "res_name": res_name}
+        for chain_id, res_id, res_name in pocket.residues
+    ]
+
+    # Add computed properties
+    data["n_spheres"] = pocket.n_spheres
+    data["n_residues"] = len(pocket.residues)
+
+    # Convert numpy types recursively
+    return _to_json_serializable(data)
+
+
 def write_pockets_json(
     output_path: str,
     pockets: list[Pocket],
@@ -225,7 +291,7 @@ def write_pockets_json(
     """
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
-    data = [pocket.to_dict() for pocket in pockets]
+    data = [_pocket_to_dict(pocket) for pocket in pockets]
 
     with open(output_path, "w") as f:
         json.dump(data, f, indent=2)
@@ -254,7 +320,7 @@ def write_individual_pocket_jsons(
         pocket_path = json_dir / pocket_filename
 
         with open(pocket_path, "w") as f:
-            json.dump(pocket.to_dict(), f, indent=2)
+            json.dump(_pocket_to_dict(pocket), f, indent=2)
 
 
 def write_summary(
