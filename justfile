@@ -4,35 +4,35 @@ alias a := all
 
 # Run tests using Pytest
 test:
-    pytest tests/ -v 
+    uv run pytest tests/ -v 
 
 # Type check code using Ty
 types:
-    ty check src/pocketeer
+    uv run ty check src/pocketeer
 
 # Lint code using Ruff
 lint:
-    ruff check src/pocketeer
+    uv run ruff check src/pocketeer
 
 # Format code using Ruff
 format:
-    ruff format src/pocketeer
+    uv run ruff format src/pocketeer
 
 # Fix ruff issues
 fix:
-    ruff check . --fix
+    uv run ruff check . --fix
     
 # Check docstring coverage
 cov:
-    interrogate src/ -v
+    uv run interrogate src/ -v
 
 # Run all checks as in CI
 all:
-    ty check src/pocketeer
-    ruff check src/ tests/
-    ruff format src/ tests/
-    interrogate src/ -v
-    pytest tests/ -n=auto -v  
+    uv run ty check src/pocketeer
+    uv run ruff check src/ tests/
+    uv run ruff format src/ tests/
+    uv run interrogate src/ -v
+    uv run pytest tests/ -n=auto -v  
 
 # Sync uv 
 sync:
