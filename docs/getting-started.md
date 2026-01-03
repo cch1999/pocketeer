@@ -140,12 +140,19 @@ pt.write_summary("summary.txt", pockets, "protein.pdb")
 
 ### Visualize Results
 
+!!! note "Installation Required"
+    The `view_pockets()` function requires the optional `atomworks` dependency. Install it with:
+    ```bash
+    pip install pocketeer[vis]
+    ```
+    or
+    ```bash
+    uv add 'pocketeer[vis]'
+    ```
+
 ```python
-# If atomworks is installed
-try:
-    pt.view_pockets(atomarray, pockets)
-except ImportError:
-    print("Install atomworks for visualization: pip install pocketeer[vis]")
+# Visualize detected pockets
+pt.view_pockets(atomarray, pockets)
 ```
 
 ## Common Issues

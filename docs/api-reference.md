@@ -107,6 +107,16 @@ All parameters for `find_pockets()` can be passed directly as keyword arguments:
 Visualize protein structure with detected pockets in a Jupyter notebook or other supported viewer.
 This function is a wrapper around [atomworks.io.utils.visualize.view](https://baker-laboratory.github.io/atomworks-dev/latest/io/utils/visualize.html) and shows pockets as colored spheres.
 
+!!! note "Installation Required"
+    This function requires the `atomworks` package. Install with:
+    ```bash
+    pip install pocketeer[vis]
+    ```
+    or
+    ```bash
+    uv add 'pocketeer[vis]'
+    ```
+
 ```python
 pocketeer.view_pockets(
     atomarray,                     # biotite.structure.AtomArray with protein structure data
@@ -156,6 +166,4 @@ pockets = pt.find_pockets(atomarray)
 viewer = pt.view_pockets(atomarray, pockets)
 viewer.show()
 ```
-
-**Note:** Requires the `atomworks` package. Install with `pip install pocketeer[vis]`.
 

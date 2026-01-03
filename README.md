@@ -151,6 +151,15 @@ Pocketeer implements a simplified version of the fpocket algorithm:
 
 Pocketeer integrates smoothly with Jupyter and scientific Python notebooks. You can directly visualize detected pockets for rapid exploration:
 
+> **Note:** The `view_pockets()` function requires the optional `atomworks` dependency. Install it with:
+> ```bash
+> pip install pocketeer[vis]
+> ```
+> or
+> ```bash
+> uv add 'pocketeer[vis]'
+> ```
+
 ```python
 import pocketeer as pt
 
