@@ -115,6 +115,7 @@ def create_pocket(
     pocket_spheres: list[AlphaSphere],
     atomarray: struc.AtomArray,
     original_atomarray: struc.AtomArray | None = None,
+    engine: str = "auto",
 ) -> Pocket:
     """Create a Pocket object with computed descriptors.
 
@@ -124,13 +125,17 @@ def create_pocket(
         atomarray: Filtered AtomArray to extract residue information
         original_atomarray: Original AtomArray before filtering for mask creation.
             If None, mask will be created from atomarray.
+        engine: Computation engine for volume calculation. Options:
+            - "auto": Use numba if available, otherwise numpy (default)
+            - "numba": Use JIT-compiled numba (requires numba installation)
+            - "numpy": Use vectorized NumPy operations
 
     Returns:
         Pocket object with descriptors
     """
     # Compute volume - use indices 0 to len(pocket_spheres)-1
     sphere_indices = set(range(len(pocket_spheres)))
-    volume = compute_voxel_volume(sphere_indices, pocket_spheres, VOXEL_SIZE)
+    volume = compute_voxel_volume(sphere_indices, pocket_spheres, VOXEL_SIZE, engine=engine)
 
     # Compute centroid
     centers = np.array([sphere.center for sphere in pocket_spheres])

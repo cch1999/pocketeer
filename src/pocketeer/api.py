@@ -30,6 +30,7 @@ def find_pockets(
     ignore_hydrogens: bool = True,
     ignore_water: bool = True,
     ignore_hetero: bool = True,
+    engine: str = "auto",
 ) -> list[Pocket]:
     """Detect binding pockets in a protein structure.
 
@@ -55,6 +56,10 @@ def find_pockets(
         ignore_hydrogens: Ignore hydrogen atoms (recommended). Default: True
         ignore_water: Ignore water molecules (recommended). Default: True
         ignore_hetero: Ignore hetero atoms i.e. ligands (recommended). Default: True
+        engine: Computation engine for volume calculation. Options:
+            - "auto": Use numba if available, otherwise numpy (default)
+            - "numba": Use JIT-compiled numba (requires numba installation)
+            - "numpy": Use vectorized NumPy operations. Default: "auto"
 
     Returns:
         pockets: list of detected Pocket objects, sorted by score (highest first)
@@ -128,7 +133,7 @@ def find_pockets(
     # Create Pocket objects with descriptors
     # Pass filtered atomarray for residue extraction, original for mask creation
     pockets = [
-        create_pocket(pocket_id, cluster, atomarray, original_atomarray)
+        create_pocket(pocket_id, cluster, atomarray, original_atomarray, engine=engine)
         for pocket_id, cluster in enumerate(pocket_clusters)
     ]
 
