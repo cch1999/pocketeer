@@ -15,7 +15,7 @@ Pocketeer detects binding pockets and cavities in protein structures using the a
 - **Modern Python implementation** - installable with `pip` or `uv`, works on Apple Silicon
 - **Flexible Python API** - built on `biotite` atom arrays
 - **Command-line interface** - simple CLI for batch processing
-- **JIT-compiled performance** - `numba` acceleration for volume calculations
+- **Optional acceleration** - `numba` JIT compilation available for faster volume calculations (optional dependency)
 
 ## Quick Start
 
@@ -25,10 +25,17 @@ Pocketeer detects binding pockets and cavities in protein structures using the a
 pip install pocketeer
 ```
 
-or 
+Install with acceleration (Numba JIT compilation):
+
+```bash
+pip install pocketeer[accelerate]
+```
+
+or using [uv](https://github.com/astral-sh/uv):
 
 ```bash
 uv add pocketeer
+uv add 'pocketeer[accelerate]'
 ```
 
 ### Python API

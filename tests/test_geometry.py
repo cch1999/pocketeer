@@ -1,9 +1,16 @@
 """Tests for geometry module."""
 
 import numpy as np
+import pytest
 from scipy.spatial import cKDTree
 
-from pocketeer.core.geometry import bounding_box, circumsphere, is_sphere_empty
+from pocketeer.core.geometry import (
+    bounding_box,
+    circumsphere,
+    compute_voxel_volume,
+    is_sphere_empty,
+)
+from pocketeer.core.types import AlphaSphere
 
 
 def test_circumsphere_regular_tetrahedron():
@@ -99,3 +106,102 @@ def test_bounding_box():
     min_corner, max_corner = bounding_box(coords, padding=1.0)
     assert np.allclose(min_corner, [-2, -3, -4])
     assert np.allclose(max_corner, [2, 3, 4])
+
+
+def test_compute_voxel_volume_numpy():
+    """Test volume calculation with NumPy engine."""
+    # Create a simple test case: two overlapping spheres
+    spheres = [
+        AlphaSphere(
+            sphere_id=0,
+            center=np.array([0.0, 0.0, 0.0], dtype=np.float64),
+            radius=2.0,
+            mean_sasa=0.0,
+            atom_indices=[0, 1, 2, 3],
+        ),
+        AlphaSphere(
+            sphere_id=1,
+            center=np.array([1.0, 0.0, 0.0], dtype=np.float64),
+            radius=2.0,
+            mean_sasa=0.0,
+            atom_indices=[4, 5, 6, 7],
+        ),
+    ]
+
+    # Compute volume with numpy engine
+    volume_numpy = compute_voxel_volume(set([0, 1]), spheres, voxel_size=0.5, engine="numpy")
+
+    # Volume should be positive
+    assert volume_numpy > 0
+
+    # Test with empty sphere set
+    volume_empty = compute_voxel_volume(set(), spheres, voxel_size=0.5, engine="numpy")
+    assert volume_empty == 0.0
+
+
+def test_compute_voxel_volume_engines_consistency():
+    """Test that NumPy and Numba engines produce consistent results."""
+    # Create a simple test case
+    spheres = [
+        AlphaSphere(
+            sphere_id=0,
+            center=np.array([0.0, 0.0, 0.0], dtype=np.float64),
+            radius=2.0,
+            mean_sasa=0.0,
+            atom_indices=[0, 1, 2, 3],
+        ),
+        AlphaSphere(
+            sphere_id=1,
+            center=np.array([1.0, 0.0, 0.0], dtype=np.float64),
+            radius=2.0,
+            mean_sasa=0.0,
+            atom_indices=[4, 5, 6, 7],
+        ),
+    ]
+
+    # Compute volume with numpy engine
+    volume_numpy = compute_voxel_volume(set([0, 1]), spheres, voxel_size=0.5, engine="numpy")
+
+    # Try to compute with numba engine if available
+    try:
+        volume_numba = compute_voxel_volume(set([0, 1]), spheres, voxel_size=0.5, engine="numba")
+        # Volumes should be very close (allowing for small numerical differences)
+        assert abs(volume_numpy - volume_numba) < 1.0, (
+            f"Volume mismatch: numpy={volume_numpy}, numba={volume_numba}"
+        )
+    except ImportError:
+        # Numba not available, skip this part of the test
+        pytest.skip("Numba not available")
+
+
+def test_compute_voxel_volume_auto():
+    """Test that auto engine selection works."""
+    spheres = [
+        AlphaSphere(
+            sphere_id=0,
+            center=np.array([0.0, 0.0, 0.0], dtype=np.float64),
+            radius=2.0,
+            mean_sasa=0.0,
+            atom_indices=[0, 1, 2, 3],
+        ),
+    ]
+
+    # Auto should work regardless of numba availability
+    volume_auto = compute_voxel_volume(set([0]), spheres, voxel_size=0.5, engine="auto")
+    assert volume_auto > 0
+
+
+def test_compute_voxel_volume_invalid_engine():
+    """Test that invalid engine raises ValueError."""
+    spheres = [
+        AlphaSphere(
+            sphere_id=0,
+            center=np.array([0.0, 0.0, 0.0], dtype=np.float64),
+            radius=2.0,
+            mean_sasa=0.0,
+            atom_indices=[0, 1, 2, 3],
+        ),
+    ]
+
+    with pytest.raises(ValueError, match="Invalid engine"):
+        compute_voxel_volume(set([0]), spheres, voxel_size=0.5, engine="invalid")
