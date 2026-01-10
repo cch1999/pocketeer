@@ -59,7 +59,7 @@ def find_pockets(
         engine: Computation engine for volume calculation. Options:
             - "auto": Use numba if available, otherwise numpy (default)
             - "numba": Use JIT-compiled numba (requires numba installation)
-            - "numpy": Use vectorized NumPy operations. Default: "auto"
+            - "numpy": Use vectorized NumPy operations.
 
     Returns:
         pockets: list of detected Pocket objects, sorted by score (highest first)
