@@ -37,17 +37,24 @@ Install with notebook viewer:
 pip install pocketeer[vis]
 ```
 
+Install with acceleration (Numba JIT compilation for faster volume calculations):
+
+```bash
+pip install pocketeer[accelerate]
+```
+
 Install using [uv](https://github.com/astral-sh/uv):
 
 ```bash
 uv add pocketeer
 ```
 
-Install with extra dependencies, e.g. for notebook/visualization support:
+Install with extra dependencies, e.g. for acceleration and visualization:
 
 ```bash
+uv add 'pocketeer[accelerate]'
 uv add 'pocketeer[vis]'
-uv add 'pocketeer[dev, vis]'
+uv add 'pocketeer[dev, vis, accelerate]'
 ```
 
 
@@ -104,6 +111,7 @@ pockets = pt.find_pockets(
     min_spheres=30,      # Minimum spheres per pocket cluster
     merge_distance=2.5,  # Distance threshold for clustering
     sasa_threshold=25.0,  # SASA threshold for buried spheres (Å²)
+    engine="numba",      # Use Numba for faster volume calculation (requires pocketeer[accelerate])
 )
 ```
 
