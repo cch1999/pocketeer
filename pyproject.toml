@@ -36,7 +36,6 @@ classifiers = [
 dependencies = [
     "numpy>=1.24",
     "scipy>=1.10",
-    "numba>=0.59",
     "typer>=0.19.2",
     "rich>=13.0",
     "biotite>=0.40",
@@ -49,6 +48,9 @@ Documentation = "https://pocketeer.readthedocs.io"
 Issues = "https://github.com/cch1999/pocketeer/issues"
 
 [project.optional-dependencies]
+accelerate = [
+    "numba>=0.59",
+]
 dev = [
     "pytest>=7.0",
     "pytest-xdist>=3.8.0",
