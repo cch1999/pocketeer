@@ -5,6 +5,12 @@ All notable changes to pocketeer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-01-12
+
+### Changed
+
+- Removed Numba dependency; volume calculation now uses pure NumPy vectorized operations
+
 ## [0.2.0] - 2025-01-XX
 
 ### Added
@@ -33,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Core pocket detection using alpha-sphere method
 - Delaunay tessellation-based geometry
 - Graph-based clustering of alpha-spheres
-- Volume estimation using voxel grid method with Numba JIT compilation
+- Volume estimation using voxel grid method with vectorized NumPy operations
 - Simple druggability scoring
 - PDB I/O with simple parser and optional Biotite support
 - CLI with Typer (built-in) and optional Rich for pretty output
@@ -44,13 +50,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `find_pockets()` - Main API function
 - `AlphaSphere` and `Pocket` data types
 - Multiple output formats (PDB, JSON, TXT)
-- Clean, minimal dependencies (numpy, scipy, numba, typer)
+- Clean, minimal dependencies (numpy, scipy, typer)
 
 ### Performance
 - Handles typical proteins (1000-5000 atoms) in 3-5 seconds
-- Numba JIT compilation for volume calculation (fast and memory-efficient)
+- Vectorized NumPy operations for volume calculation (fast and memory-efficient)
 - Vectorized NumPy operations throughout
-- First run slightly slower due to JIT compilation, subsequent runs are fast
 
 [0.1.0]: https://github.com/cch1999/pocketeer/releases/tag/v0.1.0
 
