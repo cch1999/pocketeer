@@ -7,14 +7,6 @@ from scipy.spatial import cKDTree  # type: ignore
 from ..utils.exceptions import GeometryError
 from .types import AlphaSphere
 
-# Check if numba is available
-try:
-    from numba import jit, prange  # type: ignore
-
-    HAS_NUMBA = True
-except ImportError:
-    HAS_NUMBA = False
-
 
 def circumsphere(
     points: npt.NDArray[np.float64],
@@ -115,12 +107,12 @@ def bounding_box(
     return min_corner, max_corner
 
 
-def _count_voxels_in_spheres_numpy(
-    x_coords: np.ndarray,
-    y_coords: np.ndarray,
-    z_coords: np.ndarray,
-    centers: np.ndarray,
-    radii: np.ndarray,
+def _count_voxels_in_spheres(
+    x_coords: npt.NDArray[np.float64],
+    y_coords: npt.NDArray[np.float64],
+    z_coords: npt.NDArray[np.float64],
+    centers: npt.NDArray[np.float64],
+    radii: npt.NDArray[np.float64],
 ) -> int:
     """Count voxels inside any sphere using vectorized NumPy operations.
 
@@ -172,91 +164,25 @@ def _count_voxels_in_spheres_numpy(
     return int(inside_mask.sum())
 
 
-if HAS_NUMBA:
-
-    @jit(nopython=True, cache=True)
-    def _count_voxels_in_spheres_numba(
-        x_coords: np.ndarray,
-        y_coords: np.ndarray,
-        z_coords: np.ndarray,
-        centers: np.ndarray,
-        radii: np.ndarray,
-    ) -> int:
-        """Count voxels inside any sphere (JIT compiled for speed).
-
-        Args:
-            x_coords: x coordinates of voxel grid
-            y_coords: y coordinates of voxel grid
-            z_coords: z coordinates of voxel grid
-            centers: (N_spheres, 3) sphere centers
-            radii: (N_spheres,) sphere radii
-
-        Returns:
-            Count of voxels inside any sphere
-        """
-        count = 0
-        n_spheres = centers.shape[0]
-
-        for i in prange(len(x_coords)):  # type: ignore
-            for j in range(len(y_coords)):
-                for k in range(len(z_coords)):
-                    x = x_coords[i]
-                    y = y_coords[j]
-                    z = z_coords[k]
-
-                    # Check if this voxel is inside any sphere
-                    for s in range(n_spheres):
-                        dx = x - centers[s, 0]
-                        dy = y - centers[s, 1]
-                        dz = z - centers[s, 2]
-                        dist_sq = dx * dx + dy * dy + dz * dz
-
-                        if dist_sq <= radii[s] * radii[s]:
-                            count += 1
-                            break  # Voxel is inside at least one sphere
-
-        return count
-
-
 def compute_voxel_volume(
     sphere_indices: set[int],
     spheres: list[AlphaSphere],
     voxel_size: float = 0.5,
-    engine: str = "auto",
 ) -> float:
     """Estimate pocket volume using voxel grid method.
+
+    Uses vectorized NumPy operations for efficient voxel counting.
 
     Args:
         sphere_indices: list indices (positions) of spheres in pocket
         spheres: full list of spheres
         voxel_size: grid spacing in Ångströms
-        engine: Computation engine to use. Options:
-            - "auto": Use numba if available, otherwise numpy (default)
-            - "numba": Use JIT-compiled numba (requires numba installation)
-            - "numpy": Use vectorized NumPy operations
 
     Returns:
         Estimated volume in Å³
-
-    Raises:
-        ImportError: If engine="numba" but numba is not installed
-        ValueError: If engine is not one of "auto", "numba", or "numpy"
     """
     if not sphere_indices:
         return 0.0
-
-    # Determine which engine to use
-    if engine == "auto":
-        engine = "numba" if HAS_NUMBA else "numpy"
-    elif engine not in ("numba", "numpy"):
-        raise ValueError(f"Invalid engine: {engine}. Must be 'auto', 'numba', or 'numpy'")
-
-    if engine == "numba":
-        if not HAS_NUMBA:
-            raise ImportError(
-                "Numba is not installed. "
-                "Use 'pip install pocketeer[accelerate]' or set engine='numpy'."
-            )
 
     # Get all sphere centers and radii
     pocket_spheres = [spheres[idx] for idx in sphere_indices]
@@ -272,11 +198,8 @@ def compute_voxel_volume(
     y = np.arange(min_corner[1], max_corner[1], voxel_size, dtype=np.float64)
     z = np.arange(min_corner[2], max_corner[2], voxel_size, dtype=np.float64)
 
-    # Use selected engine to count voxels
-    if engine == "numba":
-        inside_count = _count_voxels_in_spheres_numba(x, y, z, centers, radii)
-    else:
-        inside_count = _count_voxels_in_spheres_numpy(x, y, z, centers, radii)
+    # Use vectorized function to count voxels
+    inside_count = _count_voxels_in_spheres(x, y, z, centers, radii)
 
     # Volume = count * voxel_volume
     voxel_volume = voxel_size**3
