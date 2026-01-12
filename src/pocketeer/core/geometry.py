@@ -2,7 +2,6 @@
 
 import numpy as np
 import numpy.typing as npt
-from numba import jit  # type: ignore
 from scipy.spatial import cKDTree  # type: ignore
 
 from ..utils.exceptions import GeometryError
@@ -108,15 +107,14 @@ def bounding_box(
     return min_corner, max_corner
 
 
-@jit(nopython=True, cache=True)
 def _count_voxels_in_spheres(
-    x_coords: np.ndarray,
-    y_coords: np.ndarray,
-    z_coords: np.ndarray,
-    centers: np.ndarray,
-    radii: np.ndarray,
+    x_coords: npt.NDArray[np.float64],
+    y_coords: npt.NDArray[np.float64],
+    z_coords: npt.NDArray[np.float64],
+    centers: npt.NDArray[np.float64],
+    radii: npt.NDArray[np.float64],
 ) -> int:
-    """Count voxels inside any sphere (JIT compiled for speed).
+    """Count voxels inside any sphere using vectorized NumPy operations.
 
     Args:
         x_coords: x coordinates of voxel grid
@@ -128,28 +126,42 @@ def _count_voxels_in_spheres(
     Returns:
         Count of voxels inside any sphere
     """
-    count = 0
-    n_spheres = centers.shape[0]
+    grid_shape = (len(x_coords), len(y_coords), len(z_coords))
+    inside_mask = np.zeros(grid_shape, dtype=bool)
 
-    for i in range(len(x_coords)):
-        for j in range(len(y_coords)):
-            for k in range(len(z_coords)):
-                x = x_coords[i]
-                y = y_coords[j]
-                z = z_coords[k]
+    # Check each sphere
+    for center, radius in zip(centers, radii, strict=True):
+        # Find index ranges for this sphere's bounding box
+        # This drastically reduces the number of operations per sphere
+        # by only checking voxels within the sphere's bounding box
+        x_mask = (x_coords >= center[0] - radius) & (x_coords <= center[0] + radius)
+        y_mask = (y_coords >= center[1] - radius) & (y_coords <= center[1] + radius)
+        z_mask = (z_coords >= center[2] - radius) & (z_coords <= center[2] + radius)
 
-                # Check if this voxel is inside any sphere
-                for s in range(n_spheres):
-                    dx = x - centers[s, 0]
-                    dy = y - centers[s, 1]
-                    dz = z - centers[s, 2]
-                    dist_sq = dx * dx + dy * dy + dz * dz
+        # Extract small sub-grids
+        lx, ly, lz = x_coords[x_mask], y_coords[y_mask], z_coords[z_mask]
+        if lx.size == 0 or ly.size == 0 or lz.size == 0:
+            continue
 
-                    if dist_sq <= radii[s] * radii[s]:
-                        count += 1
-                        break  # Voxel is inside at least one sphere
+        # Broadcasting for distance check only within the bounding box
+        # shape: (Nx, 1, 1) + (1, Ny, 1) + (1, 1, Nz)
+        dist_sq = (
+            (lx[:, None, None] - center[0]) ** 2
+            + (ly[None, :, None] - center[1]) ** 2
+            + (lz[None, None, :] - center[2]) ** 2
+        )
 
-    return count
+        sphere_mask = dist_sq <= radius**2
+
+        # Update the global mask using slicing
+        ix = np.flatnonzero(x_mask)
+        iy = np.flatnonzero(y_mask)
+        iz = np.flatnonzero(z_mask)
+
+        # Use np.ix_ to construct the update slice
+        inside_mask[np.ix_(ix, iy, iz)] |= sphere_mask
+
+    return int(inside_mask.sum())
 
 
 def compute_voxel_volume(
@@ -159,7 +171,7 @@ def compute_voxel_volume(
 ) -> float:
     """Estimate pocket volume using voxel grid method.
 
-    Uses JIT-compiled numba for efficient voxel counting.
+    Uses vectorized NumPy operations for efficient voxel counting.
 
     Args:
         sphere_indices: list indices (positions) of spheres in pocket
@@ -186,7 +198,7 @@ def compute_voxel_volume(
     y = np.arange(min_corner[1], max_corner[1], voxel_size, dtype=np.float64)
     z = np.arange(min_corner[2], max_corner[2], voxel_size, dtype=np.float64)
 
-    # Use JIT-compiled function to count voxels (fast and memory-efficient)
+    # Use vectorized function to count voxels
     inside_count = _count_voxels_in_spheres(x, y, z, centers, radii)
 
     # Volume = count * voxel_volume

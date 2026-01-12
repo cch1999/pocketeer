@@ -20,7 +20,7 @@ Install using [uv](https://github.com/astral-sh/uv):
 uv add pocketeer
 ```
 
-Install with extra dependencies, e.g. for notebook/visualization support:
+Install with extra dependencies, e.g. for visualization:
 
 ```bash
 uv add 'pocketeer[vis]'

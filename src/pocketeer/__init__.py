@@ -1,6 +1,6 @@
 """Pocketeer: A minimal, fpocket-style pocket finder in pure Python/Numpy."""
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 
 # Public API
 
