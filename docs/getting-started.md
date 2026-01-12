@@ -5,12 +5,7 @@ This guide will walk you through installing Pocketeer and running your first poc
 ## Installation
 
 ```bash
-pip install pocket```
-
-Install with acceleration (Numba JIT compilation for faster volume calculations):
-
-```bash
-pip install pocketeer[accelerate]
+pip install pocketeer
 ```
 
 Install with notebook viewer:
@@ -25,12 +20,11 @@ Install using [uv](https://github.com/astral-sh/uv):
 uv add pocketeer
 ```
 
-Install with extra dependencies, e.g. for acceleration and visualization:
+Install with extra dependencies, e.g. for visualization:
 
 ```bash
-uv add 'pocketeer[accelerate]'
 uv add 'pocketeer[vis]'
-uv add 'pocketeer[dev, vis, accelerate]'
+uv add 'pocketeer[dev, vis]'
 ```
 
 ## Quick Tips
@@ -75,7 +69,6 @@ pockets = pt.find_pockets(
     min_spheres=30,      # Minimum spheres per pocket cluster
     merge_distance=2.5,  # Distance threshold for clustering
     sasa_threshold=25.0,  # SASA threshold for buried spheres (Å²)
-    engine="numba",      # Use Numba for faster volume calculation (requires pocketeer[accelerate])
 )
 
 print(f"Found {len(pockets)} pockets")
@@ -187,24 +180,7 @@ For large structures (>5000 atoms):
 
 1. **Use default parameters** - They're optimized for typical proteins
 2. **Consider filtering atoms** - Remove waters, ions if not needed
-3. **Install acceleration** - Install `pocketeer[accelerate]` to use Numba JIT compilation for faster volume calculations
-4. **Run on multiple cores** - Pocketeer uses NumPy/SciPy which can utilize multiple cores
-
-### Engine Selection
-
-Pocketeer supports two computation engines for volume calculation:
-
-- **`"auto"`** (default): Automatically uses Numba if available, otherwise falls back to NumPy
-- **`"numba"`**: Uses JIT-compiled Numba for maximum performance (requires `pocketeer[accelerate]`)
-- **`"numpy"`**: Uses vectorized NumPy operations (works without Numba)
-
-```python
-# Use NumPy engine explicitly
-pockets = pt.find_pockets(atomarray, engine="numpy")
-
-# Use Numba engine (requires installation)
-pockets = pt.find_pockets(atomarray, engine="numba")
-```
+3. **Run on multiple cores** - Pocketeer uses NumPy/SciPy which can utilize multiple cores
 
 ## Next Steps
 
