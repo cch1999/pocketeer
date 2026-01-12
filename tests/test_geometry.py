@@ -1,7 +1,6 @@
 """Tests for geometry module."""
 
 import numpy as np
-import pytest
 from scipy.spatial import cKDTree
 
 from pocketeer.core.geometry import (
@@ -109,7 +108,7 @@ def test_bounding_box():
 
 
 def test_compute_voxel_volume_numpy():
-    """Test volume calculation with NumPy engine."""
+    """Test volume calculation with vectorized NumPy operations."""
     # Create a simple test case: two overlapping spheres
     spheres = [
         AlphaSphere(
@@ -128,19 +127,19 @@ def test_compute_voxel_volume_numpy():
         ),
     ]
 
-    # Compute volume with numpy engine
-    volume_numpy = compute_voxel_volume(set([0, 1]), spheres, voxel_size=0.5, engine="numpy")
+    # Compute volume
+    volume = compute_voxel_volume(set([0, 1]), spheres, voxel_size=0.5)
 
     # Volume should be positive
-    assert volume_numpy > 0
+    assert volume > 0
 
     # Test with empty sphere set
-    volume_empty = compute_voxel_volume(set(), spheres, voxel_size=0.5, engine="numpy")
+    volume_empty = compute_voxel_volume(set(), spheres, voxel_size=0.5)
     assert volume_empty == 0.0
 
 
-def test_compute_voxel_volume_engines_consistency():
-    """Test that NumPy and Numba engines produce consistent results."""
+def test_compute_voxel_volume_consistency():
+    """Test that volume calculation produces consistent results."""
     # Create a simple test case
     spheres = [
         AlphaSphere(
@@ -159,23 +158,17 @@ def test_compute_voxel_volume_engines_consistency():
         ),
     ]
 
-    # Compute volume with numpy engine
-    volume_numpy = compute_voxel_volume(set([0, 1]), spheres, voxel_size=0.5, engine="numpy")
+    # Compute volume multiple times - should be consistent
+    volume1 = compute_voxel_volume(set([0, 1]), spheres, voxel_size=0.5)
+    volume2 = compute_voxel_volume(set([0, 1]), spheres, voxel_size=0.5)
 
-    # Try to compute with numba engine if available
-    try:
-        volume_numba = compute_voxel_volume(set([0, 1]), spheres, voxel_size=0.5, engine="numba")
-        # Volumes should be very close (allowing for small numerical differences)
-        assert abs(volume_numpy - volume_numba) < 1.0, (
-            f"Volume mismatch: numpy={volume_numpy}, numba={volume_numba}"
-        )
-    except ImportError:
-        # Numba not available, skip this part of the test
-        pytest.skip("Numba not available")
+    # Volumes should be identical
+    assert volume1 == volume2
+    assert volume1 > 0
 
 
-def test_compute_voxel_volume_auto():
-    """Test that auto engine selection works."""
+def test_compute_voxel_volume_basic():
+    """Test basic volume calculation."""
     spheres = [
         AlphaSphere(
             sphere_id=0,
@@ -186,13 +179,13 @@ def test_compute_voxel_volume_auto():
         ),
     ]
 
-    # Auto should work regardless of numba availability
-    volume_auto = compute_voxel_volume(set([0]), spheres, voxel_size=0.5, engine="auto")
-    assert volume_auto > 0
+    # Compute volume
+    volume = compute_voxel_volume(set([0]), spheres, voxel_size=0.5)
+    assert volume > 0
 
 
-def test_compute_voxel_volume_invalid_engine():
-    """Test that invalid engine raises ValueError."""
+def test_compute_voxel_volume_different_voxel_sizes():
+    """Test that different voxel sizes produce different but consistent results."""
     spheres = [
         AlphaSphere(
             sphere_id=0,
@@ -203,5 +196,14 @@ def test_compute_voxel_volume_invalid_engine():
         ),
     ]
 
-    with pytest.raises(ValueError, match="Invalid engine"):
-        compute_voxel_volume(set([0]), spheres, voxel_size=0.5, engine="invalid")
+    # Smaller voxel size should give more accurate (but potentially different) volume
+    volume_small = compute_voxel_volume(set([0]), spheres, voxel_size=0.25)
+    volume_large = compute_voxel_volume(set([0]), spheres, voxel_size=0.5)
+
+    # Both should be positive
+    assert volume_small > 0
+    assert volume_large > 0
+
+    # Smaller voxel size typically gives more accurate volume (closer to true volume)
+    # but may be slightly different due to discretization
+    assert abs(volume_small - volume_large) < volume_large * 0.5  # Allow some difference
