@@ -48,9 +48,6 @@ Documentation = "https://pocketeer.readthedocs.io"
 Issues = "https://github.com/cch1999/pocketeer/issues"
 
 [project.optional-dependencies]
-accelerate = [
-    "numba>=0.59",
-]
 dev = [
     "pytest>=7.0",
     "pytest-xdist>=3.8.0",
