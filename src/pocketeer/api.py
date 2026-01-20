@@ -3,6 +3,7 @@
 import logging
 
 import biotite.structure as struc  # type: ignore
+import numpy as np
 
 from .core import (
     Pocket,
@@ -12,6 +13,7 @@ from .core import (
     filter_surface_spheres,
     label_polarity,
 )
+from .core.scoring import _create_pocket_from_components
 from .utils.constants import MIN_ATOMS_FOR_TESSELLATION
 from .utils.exceptions import ValidationError
 
@@ -138,3 +140,73 @@ def find_pockets(
     logger.info(f"Pocket detection complete. {len(pockets)} pockets found")
 
     return pockets
+
+
+def merge_pockets(
+    pockets: list[Pocket],
+    new_pocket_id: int | None = None,
+) -> Pocket:
+    """Merge multiple pockets into a single combined pocket.
+
+    Combines spheres from all pockets and recomputes derived properties
+    (centroid, volume, residues, mask, score). Spheres are deduplicated
+    by sphere_id to avoid counting the same sphere multiple times.
+
+    Args:
+        pockets: List of Pocket objects to merge
+        new_pocket_id: ID for the merged pocket. Defaults to the minimum
+            pocket_id from the input pockets.
+
+    Returns:
+        New Pocket object containing all spheres from input pockets
+
+    Raises:
+        ValueError: If pockets list is empty
+        ValueError: If masks have incompatible shapes (different atomarrays)
+
+    Examples:
+        >>> import pocketeer as pt
+        >>> atomarray = pt.load_structure("protein.pdb")
+        >>> pockets = pt.find_pockets(atomarray)
+        >>> # Merge the top 3 pockets
+        >>> merged = pt.merge_pockets(pockets[:3])
+        >>> # Merge with custom ID
+        >>> merged = pt.merge_pockets(pockets[:3], new_pocket_id=999)
+    """
+    if not pockets:
+        raise ValueError("Cannot merge empty list of pockets")
+
+    if len(pockets) == 1:
+        return pockets[0]
+
+    # Validate that all masks have the same shape (same original atomarray)
+    mask_shapes = {p.mask.shape for p in pockets}
+    if len(mask_shapes) > 1:
+        raise ValueError(
+            f"Masks have incompatible shapes: {mask_shapes}. "
+            "All pockets must be derived from the same atomarray."
+        )
+
+    # Combine all spheres (deduplicate by sphere_id)
+    seen_ids: set[int] = set()
+    merged_spheres = [
+        sphere
+        for pocket in pockets
+        for sphere in pocket.spheres
+        if sphere.sphere_id not in seen_ids and not seen_ids.add(sphere.sphere_id)
+    ]
+
+    if not merged_spheres:
+        raise ValueError("No spheres found after merging (all were duplicates)")
+
+    # Merge residues (union, deduplicated and sorted)
+    merged_residues = sorted(set(residue for pocket in pockets for residue in pocket.residues))
+
+    # Merge masks (logical OR - any atom in any pocket)
+    merged_mask = np.any([p.mask for p in pockets], axis=0)
+
+    # Assign pocket_id
+    pocket_id = new_pocket_id if new_pocket_id is not None else min(p.pocket_id for p in pockets)
+
+    # Create merged pocket using internal helper
+    return _create_pocket_from_components(pocket_id, merged_spheres, merged_residues, merged_mask)
