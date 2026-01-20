@@ -93,7 +93,8 @@ def find_pockets(
         atomarray = atomarray[atomarray.element != "H"]
 
     if ignore_water:
-        atomarray = atomarray[atomarray.res_name != "HOH"]
+        # Use biotite's filter_solvent which handles more types of solvent molecules
+        atomarray = atomarray[~struc.filter_solvent(atomarray)]
 
     if ignore_hetero:
         atomarray = atomarray[~atomarray.hetero]
