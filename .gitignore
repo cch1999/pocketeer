@@ -42,7 +42,6 @@ site/
 
 # Coding
 .cursor/
-uv.lock
 dev.ipynb
 4tos.pdb
 experiments/*
