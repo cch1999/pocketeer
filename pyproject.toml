@@ -74,7 +74,7 @@ pocketeer = "pocketeer.cli:app"
 [tool.ruff]
 line-length = 100
 lint.select = ["E","F","I","UP","B","BLE","PL","RUF"]
-lint.ignore = ["PLR0913"]  # Allow many function arguments for CLI
+lint.ignore = ["PLR0913", "PLR0912"]  # Allow many function arguments for CLI, allow many branches for vis
 exclude = [
     "*.ipynb",           # Ignore Jupyter notebooks
     "__pycache__",       # Ignore Python cache
