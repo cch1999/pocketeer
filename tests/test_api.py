@@ -202,3 +202,18 @@ def test_merge_pockets_deduplication(load_test_structure):
     # Merged should have at most the union of sphere IDs (could be less if there's overlap)
     assert len(merged_sphere_ids) <= len(sphere_ids_1 | sphere_ids_2)
     assert len(merged.spheres) == len(merged_sphere_ids)  # No duplicates
+
+
+def test_pocket_coords(load_test_structure):
+    """Test that pocket.coords returns correctly shaped numpy array."""
+    pockets = find_pockets(load_test_structure)
+    if not pockets:
+        pytest.skip("No pockets found for coords testing")
+
+    pocket = pockets[0]
+    coords = pocket.coords
+
+    assert isinstance(coords, np.ndarray)
+    assert coords.shape == (len(pocket.spheres), 3)
+    # Check first coordinate matches first sphere's center
+    assert np.allclose(coords[0], pocket.spheres[0].center)

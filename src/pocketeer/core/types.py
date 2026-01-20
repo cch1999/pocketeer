@@ -43,6 +43,11 @@ class Pocket:
         return [sphere.sphere_id for sphere in self.spheres]
 
     @property
+    def coords(self) -> npt.NDArray[np.float64]:
+        """Get centers of all spheres in pocket as an (N, 3) array."""
+        return np.array([sphere.center for sphere in self.spheres])
+
+    @property
     def n_spheres(self) -> int:
         """Number of spheres in pocket."""
         return len(self.spheres)
