@@ -15,7 +15,7 @@ from pocketeer.core.types import Pocket
 
 def view_pockets(
     atomarray: struc.AtomArray,
-    pockets: list[Pocket],
+    pockets: Pocket | list[Pocket],
     color_scheme: str = "rainbow",
     sphere_opacity: float = 0.7,
     sphere_scale: float = 1.0,
@@ -31,7 +31,7 @@ def view_pockets(
 
     Args:
         atomarray: Biotite AtomArray with structure data
-        pockets: List of Pocket objects from pocketeer.find_pockets()
+        pockets: Pocket object or list of Pocket objects from pocketeer.find_pockets()
         color_scheme: Color scheme for pockets ("rainbow", "grayscale", "red_blue")
         sphere_opacity: Opacity of pocket spheres (0.0 to 1.0)
         sphere_scale: Scale factor for sphere sizes
@@ -44,7 +44,8 @@ def view_pockets(
 
     Raises:
         ImportError: if atomworks is not installed
-        TypeError: if atomarray is not a Biotite AtomArray
+        TypeError: if atomarray is not a Biotite AtomArray or pockets is not a Pocket/list[Pocket]
+        ValueError: if no pockets provided
 
     Examples:
         >>> import pocketeer
@@ -52,10 +53,9 @@ def view_pockets(
         >>> pockets = pocketeer.find_pockets(atoms)
         >>> viewer = pocketeer.view_pockets(atoms, pockets)
         >>> viewer.show()  # In Jupyter notebook
+        >>> # Or with a single pocket:
+        >>> viewer = pocketeer.view_pockets(atoms, pockets[0])
     """
-
-    if not pockets:
-        raise ValueError("No pockets found")
 
     # Validate input
     if not isinstance(atomarray, struc.AtomArray):
@@ -63,6 +63,15 @@ def view_pockets(
             f"atomarray must be a Biotite AtomArray. Got {type(atomarray).__name__}. "
             "Use pocketeer.load_structure() to load from PDB file."
         )
+
+    # Normalize input: convert single Pocket to list
+    if isinstance(pockets, Pocket):
+        pockets = [pockets]
+    elif not isinstance(pockets, list):
+        raise TypeError(f"pockets must be a Pocket or list[Pocket]. Got {type(pockets).__name__}")
+
+    if not pockets:
+        raise ValueError("No pockets found")
 
     # Create viewer and add structure
     # See https://baker-laboratory.github.io/atomworks-dev/latest/io/utils/visualize.html for more details # noqa: E501
