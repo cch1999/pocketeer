@@ -3,9 +3,11 @@ import re
 import numpy as np
 import pytest
 
-from pocketeer import find_pockets, load_structure, write_individual_pocket_jsons
+from pocketeer import find_pockets, load_structure, merge_pockets, write_individual_pocket_jsons
 
 struc = pytest.importorskip("biotite.structure")
+
+MIN_POCKETS_FOR_MERGE = 2
 
 
 @pytest.fixture
@@ -126,3 +128,77 @@ def test_pocket_mask(load_test_structure):
     # Verify mask can be used to select atoms
     pocket_atoms = original_atomarray[pocket.mask]
     assert len(pocket_atoms) > 0, "Mask should select at least some atoms"
+
+
+def test_merge_pockets_basic(load_test_structure):
+    """Test basic pocket merging functionality."""
+    pockets = find_pockets(load_test_structure)
+
+    if len(pockets) < MIN_POCKETS_FOR_MERGE:
+        pytest.skip("Need at least 2 pockets to test merging")
+
+    # Merge first two pockets
+    merged = merge_pockets(pockets[:2])
+
+    # Verify merged pocket has correct structure
+    assert merged.pocket_id == min(p.pocket_id for p in pockets[:2])
+    assert len(merged.spheres) >= max(len(p.spheres) for p in pockets[:2])
+    assert len(merged.residues) >= max(len(p.residues) for p in pockets[:2])
+    assert merged.volume >= max(p.volume for p in pockets[:2])
+    assert merged.score >= 0  # Score should be non-negative
+
+    # Verify mask is merged correctly (logical OR)
+    assert np.array_equal(merged.mask, np.any([p.mask for p in pockets[:2]], axis=0))
+
+
+def test_merge_pockets_custom_id(load_test_structure):
+    """Test merging with custom pocket ID."""
+    pockets = find_pockets(load_test_structure)
+
+    if len(pockets) < MIN_POCKETS_FOR_MERGE:
+        pytest.skip("Need at least 2 pockets to test merging")
+
+    custom_id = 999
+    merged = merge_pockets(pockets[:2], new_pocket_id=custom_id)
+    assert merged.pocket_id == custom_id
+
+
+def test_merge_pockets_single(load_test_structure):
+    """Test merging a single pocket returns it unchanged."""
+    pockets = find_pockets(load_test_structure)
+
+    if not pockets:
+        pytest.skip("Need at least 1 pocket to test")
+
+    merged = merge_pockets([pockets[0]])
+    assert merged.pocket_id == pockets[0].pocket_id
+    assert len(merged.spheres) == len(pockets[0].spheres)
+    assert merged.score == pockets[0].score
+
+
+def test_merge_pockets_empty_list():
+    """Test that merging empty list raises ValueError."""
+    with pytest.raises(ValueError, match="Cannot merge empty list"):
+        merge_pockets([])
+
+
+def test_merge_pockets_deduplication(load_test_structure):
+    """Test that duplicate spheres are deduplicated."""
+    pockets = find_pockets(load_test_structure)
+
+    if len(pockets) < MIN_POCKETS_FOR_MERGE:
+        pytest.skip("Need at least 2 pockets to test deduplication")
+
+    # Get sphere IDs from both pockets
+    sphere_ids_1 = set(pockets[0].sphere_ids)
+    sphere_ids_2 = set(pockets[1].sphere_ids)
+
+    # Merge them
+    merged = merge_pockets(pockets[:2])
+
+    # Count unique sphere IDs in merged pocket
+    merged_sphere_ids = set(merged.sphere_ids)
+
+    # Merged should have at most the union of sphere IDs (could be less if there's overlap)
+    assert len(merged_sphere_ids) <= len(sphere_ids_1 | sphere_ids_2)
+    assert len(merged.spheres) == len(merged_sphere_ids)  # No duplicates
