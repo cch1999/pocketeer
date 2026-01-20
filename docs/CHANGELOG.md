@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `merge_pockets` function to combine multiple pockets into a simple object
+- Added `.coords` property to `Pocket` class returning an (N, 3) array of sphere centers
 
 ### Changed
 
