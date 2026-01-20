@@ -115,6 +115,21 @@ pockets = pt.find_pockets(
 )
 ```
 
+### Merging Pockets
+
+You can combine multiple pockets into a single merged pocket:
+
+```python
+import pocketeer as pt
+
+atomarray = pt.load_structure("protein.pdb")
+pockets = pt.find_pockets(atomarray)
+
+# Merge the top 3 pockets
+merged = pt.merge_pockets(pockets[:3])
+print(f"Merged pocket volume: {merged.volume:.1f} Å³")
+```
+
 ### Command-Line Interface
 
 ```bash
