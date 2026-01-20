@@ -110,6 +110,50 @@ def score_pocket(
     return score
 
 
+def _create_pocket_from_components(
+    pocket_id: int,
+    spheres: list[AlphaSphere],
+    residues: list[tuple[str, int, str]],
+    mask: np.ndarray,
+) -> Pocket:
+    """Create a Pocket from precomputed components (internal helper).
+
+    Used when spheres, residues, and mask are already known.
+    Computes volume, centroid, and score.
+
+    Args:
+        pocket_id: unique pocket identifier
+        spheres: list of spheres in this pocket
+        residues: list of residues as (chain_id, res_id, res_name) tuples
+        mask: boolean mask for selecting atoms in pocket residues
+
+    Returns:
+        Pocket object with computed volume, centroid, and score
+    """
+    # Compute volume
+    sphere_indices = set(range(len(spheres)))
+    volume = compute_voxel_volume(sphere_indices, spheres, VOXEL_SIZE)
+
+    # Compute centroid
+    centers = np.array([s.center for s in spheres])
+    centroid = centers.mean(axis=0).astype(np.float64)
+
+    # Create pocket
+    pocket = Pocket(
+        pocket_id=pocket_id,
+        spheres=spheres,
+        centroid=centroid,
+        volume=volume,
+        score=0.0,  # placeholder
+        residues=residues,
+        mask=mask,
+    )
+
+    # Score and return
+    score = score_pocket(pocket)
+    return replace(pocket, score=score)
+
+
 def create_pocket(
     pocket_id: int,
     pocket_spheres: list[AlphaSphere],
@@ -128,14 +172,6 @@ def create_pocket(
     Returns:
         Pocket object with descriptors
     """
-    # Compute volume - use indices 0 to len(pocket_spheres)-1
-    sphere_indices = set(range(len(pocket_spheres)))
-    volume = compute_voxel_volume(sphere_indices, pocket_spheres, VOXEL_SIZE)
-
-    # Compute centroid
-    centers = np.array([sphere.center for sphere in pocket_spheres])
-    centroid = centers.mean(axis=0).astype(np.float64)
-
     # Extract residues from filtered atomarray
     residues = extract_pocket_residues(pocket_spheres, atomarray)
 
@@ -144,17 +180,5 @@ def create_pocket(
     mask_atomarray = original_atomarray if original_atomarray is not None else atomarray
     mask = create_residue_mask(residues, mask_atomarray)
 
-    # Create pocket
-    pocket = Pocket(
-        pocket_id=pocket_id,
-        spheres=pocket_spheres,
-        centroid=centroid,
-        volume=volume,
-        score=0.0,  # placeholder, filled below
-        residues=residues,
-        mask=mask,
-    )
-
-    # Score the pocket and create final frozen instance
-    score = score_pocket(pocket)
-    return replace(pocket, score=score)
+    # Delegate to helper function
+    return _create_pocket_from_components(pocket_id, pocket_spheres, residues, mask)

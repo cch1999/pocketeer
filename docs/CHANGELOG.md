@@ -5,6 +5,20 @@ All notable changes to pocketeer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - TBD
+
+### Added
+
+- Added `merge_pockets` function to combine multiple pockets into a simple object
+
+### Changed
+
+- (TBD)
+
+### Fixed
+
+- Used `struc.filter_solvent` from `biotite` to filter solvent instead of just water CCD code.
+
 ## [0.3.0] - 2026-01-12
 
 ### Changed

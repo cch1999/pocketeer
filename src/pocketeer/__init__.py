@@ -4,7 +4,7 @@ __version__ = "0.3.0"
 
 # Public API
 
-from .api import find_pockets
+from .api import find_pockets, merge_pockets
 from .core import AlphaSphere, Pocket
 from .utils import (
     load_structure,
@@ -20,6 +20,7 @@ __all__ = [
     "__version__",
     "find_pockets",
     "load_structure",
+    "merge_pockets",
     "write_individual_pocket_jsons",
     "write_pockets_as_pdb",
     "write_pockets_json",

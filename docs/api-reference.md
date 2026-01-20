@@ -7,6 +7,7 @@ This page documents all public functions and classes in Pocketeer. There are rea
 |-----------------------------------------------|----------------------------------------------------------------------|
 | `load_structure()`                    | Loads a structure from a PDB file as a Biotite AtomArray.            |
 | `find_pockets()`   | Detects binding pockets in protein structures.                       |
+| `merge_pockets()`                      | Merges multiple pockets into a single combined pocket.                |
 | `view_pockets()`                        | Visualizes pockets and protein structures in a 3D viewer (e.g., notebook).                |
 
 
@@ -63,6 +64,53 @@ pockets = pt.find_pockets(atomarray)
 
 # With custom parameters
 pockets = pt.find_pockets(atomarray, r_min=2.5, r_max=7.0, min_spheres=25)
+```
+
+### `merge_pockets()`
+
+Merge multiple pockets into a single combined pocket.
+
+```python
+pocketeer.merge_pockets(
+    pockets: list[Pocket],
+    new_pocket_id: int | None = None
+) -> Pocket
+```
+
+**Parameters:**
+
+- **`pockets`**: List of Pocket objects to merge. All pockets must be derived from the same atomarray.
+- **`new_pocket_id`**: Optional ID for the merged pocket. Defaults to the minimum pocket_id from the input pockets.
+
+**Returns:**
+
+A new `Pocket` object containing all spheres from the input pockets. The merged pocket has:
+- Combined spheres (deduplicated by sphere_id)
+- Merged residues (union, sorted)
+- Combined mask (logical OR of all input masks)
+- Recomputed properties (centroid, volume, score)
+
+**Raises:**
+
+- `ValueError`: If pockets list is empty
+- `ValueError`: If masks have incompatible shapes (pockets from different atomarrays)
+
+**Example:**
+
+```python
+import pocketeer as pt
+
+# Load structure and detect pockets
+atomarray = pt.load_structure("protein.pdb")
+pockets = pt.find_pockets(atomarray)
+
+# Merge the top 3 pockets
+merged = pt.merge_pockets(pockets[:3])
+print(f"Merged pocket volume: {merged.volume:.1f} Å³")
+print(f"Total spheres: {merged.n_spheres}")
+
+# Merge with custom ID
+merged = pt.merge_pockets(pockets[:3], new_pocket_id=999)
 ```
 
 ### `load_structure()`
