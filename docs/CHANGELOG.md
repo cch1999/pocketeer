@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- (TBD)
+- Updated `view_pockets` to accept a single `Pocket` object in addition to a list of pockets
 
 ### Fixed
 
