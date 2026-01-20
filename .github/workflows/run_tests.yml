@@ -76,5 +76,5 @@ jobs:
         run: uv sync --all-extras
 
       - name: Run tests
-        # -n auto parallelizes tests across CPUs
-        run: uv run pytest tests/ -n auto -v --cov=src/pocketeer --cov-report=xml --cov-report=term-missing
+        # Use 4 workers for better parallelization (tests are I/O-bound)
+        run: uv run pytest tests/ -n 4 -v --cov=src/pocketeer --cov-report=xml --cov-report=term-missing
