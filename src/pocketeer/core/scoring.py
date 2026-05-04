@@ -8,15 +8,21 @@ import numpy as np
 
 from ..utils.constants import MAX_RADIUS_THRESHOLD, MIN_RADIUS_THRESHOLD, VOXEL_SIZE
 from .geometry import compute_voxel_volume
-from .types import AlphaSphere, Pocket
+from .types import AlphaSphere, Pocket, PocketResidue
 
 logger = logging.getLogger("pocketeer.pocket")
+
+
+def _normalized_ins_code(atomarray: struc.AtomArray, atom_idx: int) -> str:
+    if "ins_code" not in atomarray.get_annotation_categories():
+        return ""
+    return str(atomarray.ins_code[atom_idx]).strip()
 
 
 def extract_pocket_residues(
     spheres: list[AlphaSphere],
     atomarray: struc.AtomArray,
-) -> list[tuple[str, int, str]]:
+) -> list[PocketResidue]:
     """Extract unique residues associated with pocket spheres.
 
     Collects all atom indices from all spheres, maps them to residues
@@ -28,7 +34,7 @@ def extract_pocket_residues(
         atomarray: Biotite AtomArray with structure data
 
     Returns:
-        Sorted list of unique residues as (chain_id, res_id, res_name) tuples
+        Sorted list of unique ``PocketResidue`` records
     """
     # Collect all atom indices from all spheres
     all_atom_indices = set()
@@ -36,43 +42,56 @@ def extract_pocket_residues(
         all_atom_indices.update(sphere.atom_indices)
 
     # Map atom indices to residues
-    residue_set = set()
+    residue_set: set[PocketResidue] = set()
     for atom_idx in all_atom_indices:
         if atom_idx < len(atomarray):
-            chain_id = str(atomarray.chain_id[atom_idx])
-            res_id = int(atomarray.res_id[atom_idx])
-            res_name = str(atomarray.res_name[atom_idx])
-            residue_set.add((chain_id, res_id, res_name))
+            chain = str(atomarray.chain_id[atom_idx])
+            res_num = int(atomarray.res_id[atom_idx])
+            ins_code = _normalized_ins_code(atomarray, atom_idx)
+            residue = str(atomarray.res_name[atom_idx])
+            residue_set.add(
+                PocketResidue(
+                    chain=chain,
+                    res_num=res_num,
+                    ins_code=ins_code,
+                    residue=residue,
+                )
+            )
 
     # Return sorted list for consistent ordering
     return sorted(residue_set)
 
 
 def create_residue_mask(
-    residues: list[tuple[str, int, str]],
+    residues: list[PocketResidue],
     atomarray: struc.AtomArray,
 ) -> np.ndarray:
     """Create a boolean mask for atoms belonging to pocket residues.
 
     Args:
-        residues: List of residues as (chain_id, res_id, res_name) tuples
+        residues: List of pocket residues
         atomarray: Biotite AtomArray with structure data
 
     Returns:
         Boolean numpy array where True indicates the atom belongs to a residue in the pocket
     """
     # Create string identifiers for fast vectorized lookup
-    # Format: "chain_id:res_id:res_name" for efficient comparison
-    residue_ids = {f"{cid}:{rid}:{rname}" for cid, rid, rname in residues}
+    # Format: "chain:res_num:ins_code:residue"
+    residue_ids = {f"{pr.chain}:{pr.res_num}:{pr.ins_code}:{pr.residue}" for pr in residues}
 
     # Extract arrays and create identifiers for all atoms using vectorized operations
     chain_ids = atomarray.chain_id.astype(str)
     res_ids = atomarray.res_id.astype(int).astype(str)
     res_names = atomarray.res_name.astype(str)
+    if "ins_code" in atomarray.get_annotation_categories():
+        ins_codes = np.char.strip(atomarray.ins_code.astype(str))
+    else:
+        ins_codes = np.array([""] * len(atomarray), dtype="<U10")
 
-    # Create identifiers for all atoms using vectorized string concatenation
-    atom_ids = np.char.add(np.char.add(chain_ids, ":"), np.char.add(res_ids, ":"))
-    atom_ids = np.char.add(atom_ids, res_names)
+    # Create identifiers for all atoms: chain:res_num:ins_code:residue
+    atom_ids = np.char.add(np.char.add(chain_ids, ":"), res_ids)
+    atom_ids = np.char.add(np.char.add(atom_ids, ":"), ins_codes)
+    atom_ids = np.char.add(np.char.add(atom_ids, ":"), res_names)
 
     # Vectorized membership check using numpy's isin (highly optimized)
     mask = np.isin(atom_ids, list(residue_ids))
@@ -113,7 +132,7 @@ def score_pocket(
 def _create_pocket_from_components(
     pocket_id: int,
     spheres: list[AlphaSphere],
-    residues: list[tuple[str, int, str]],
+    residues: list[PocketResidue],
     mask: np.ndarray,
 ) -> Pocket:
     """Create a Pocket from precomputed components (internal helper).
@@ -124,7 +143,7 @@ def _create_pocket_from_components(
     Args:
         pocket_id: unique pocket identifier
         spheres: list of spheres in this pocket
-        residues: list of residues as (chain_id, res_id, res_name) tuples
+        residues: list of pocket residues
         mask: boolean mask for selecting atoms in pocket residues
 
     Returns:
