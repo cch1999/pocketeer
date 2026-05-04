@@ -148,22 +148,12 @@ All parameters for `find_pockets()` can be passed directly as keyword arguments:
 - **`merge_distance`** (default: 1.75 Å): Distance threshold for merging nearby sphere clusters
 - **`min_spheres`** (default: 35): Minimum number of spheres per pocket cluster
 
-## Visualization (Optional)
+## Visualization
 
 ### `view_pockets()`
 
 Visualize protein structure with detected pockets in a Jupyter notebook or other supported viewer.
-This function is a wrapper around [atomworks.io.utils.visualize.view](https://baker-laboratory.github.io/atomworks-dev/latest/io/utils/visualize.html) and shows pockets as colored spheres.
-
-!!! note "Installation Required"
-    This function requires the `atomworks` package. Install with:
-    ```bash
-    pip install pocketeer[vis]
-    ```
-    or
-    ```bash
-    uv add 'pocketeer[vis]'
-    ```
+This function is a wrapper around [atomview.view](https://pypi.org/project/atomview/) and shows pockets as colored spheres.
 
 ```python
 pocketeer.view_pockets(
@@ -174,9 +164,9 @@ pocketeer.view_pockets(
     sphere_scale=1.0,              # Size scaling of spheres
     receptor_cartoon=True,         # Show main structure as cartoon
     receptor_surface=False,        # Show surface of protein
-    **kwargs                       # Extra arguments passed to atomworks "view"
+    **kwargs                       # Extra arguments passed to atomview "view"
 )
-# Returns: atomworks viewer instance (e.g. py3Dmol)
+# Returns: atomview viewer instance (e.g. py3Dmol)
 ```
 
 **Arguments:**
@@ -190,15 +180,14 @@ pocketeer.view_pockets(
 | `sphere_scale`      | `float`                          | `1.0`           | Scale factor for alpha-sphere display                                   |
 | `receptor_cartoon`  | `bool`                           | `True`          | Show main structure as cartoon                                          |
 | `receptor_surface`  | `bool`                           | `False`         | Show protein surface                                                    |
-| `**kwargs`          | any                              | N/A             | Additional arguments passed to atomworks `view()`                       |
+| `**kwargs`          | any                              | N/A             | Additional arguments passed to atomview `view()`                        |
 
 **Returns:**
 
-- **atomworks viewer instance** (e.g. based on py3Dmol) for interactive use
+- **atomview viewer instance** (e.g. based on py3Dmol) for interactive use
 
 **Raises:**
 
-- `ImportError` if atomworks is not installed
 - `TypeError` if atomarray is not a Biotite AtomArray
 - `ValueError` if no pockets given or unknown color scheme
 
