@@ -34,6 +34,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
+    "atomview>=0.1.1",
     "numpy>=1.24",
     "scipy>=1.10",
     "typer>=0.19.2",
@@ -62,10 +63,6 @@ dev = [
 docs = [
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.0.0",
-]
-vis = [
-    "atomworks>=1.0.3",
-    "dotenv>=0.9.9",
 ]
 
 [project.scripts]
