@@ -8,23 +8,16 @@ This guide will walk you through installing Pocketeer and running your first poc
 pip install pocketeer
 ```
 
-Install with notebook viewer:
-
-```bash
-pip install pocketeer[vis]
-```
-
 Install using [uv](https://github.com/astral-sh/uv):
 
 ```bash
 uv add pocketeer
 ```
 
-Install with extra dependencies, e.g. for visualization:
+Install with development dependencies:
 
 ```bash
-uv add 'pocketeer[vis]'
-uv add 'pocketeer[dev, vis]'
+uv add 'pocketeer[dev]'
 ```
 
 ## Quick Tips
@@ -139,16 +132,6 @@ pt.write_summary("summary.txt", pockets, "protein.pdb")
 ```
 
 ### Visualize Results
-
-!!! note "Installation Required"
-    The `view_pockets()` function requires the optional `atomworks` dependency. Install it with:
-    ```bash
-    pip install pocketeer[vis]
-    ```
-    or
-    ```bash
-    uv add 'pocketeer[vis]'
-    ```
 
 ```python
 # Visualize detected pockets

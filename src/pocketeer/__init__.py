@@ -13,6 +13,7 @@ from .utils import (
     write_pockets_json,
     write_summary,
 )
+from .vis import view_pockets
 
 __all__ = [
     "AlphaSphere",
@@ -21,17 +22,9 @@ __all__ = [
     "find_pockets",
     "load_structure",
     "merge_pockets",
+    "view_pockets",
     "write_individual_pocket_jsons",
     "write_pockets_as_pdb",
     "write_pockets_json",
     "write_summary",
 ]
-
-# Add visualization function to __all__ if available
-try:
-    from .vis import view_pockets  # noqa: F401
-
-    __all__.append("view_pockets")
-except (ImportError, ModuleNotFoundError):
-    # If vis module can't be imported, view_pockets won't be available
-    pass

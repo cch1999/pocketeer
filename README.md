@@ -14,7 +14,7 @@
 
 A lightweight, fast pocket finder in Python.
 
-Pocketeer detects binding pockets and cavities in protein structures using the alpha-sphere method based on Delaunay tessellation—similar to the popular fpocket, but with a modern, Pythonic interface. It's lightweight, fast, and easy to use as both a Python library and a command-line tool. Pocketeer natively supports `atomarrays` from [`biotite`](https://www.biotite-python.org/latest/), making it fully compatible with [`atomworks`](https://rosettacommons.github.io/atomworks/latest/).
+Pocketeer detects binding pockets and cavities in protein structures using the alpha-sphere method based on Delaunay tessellation—similar to the popular fpocket, but with a modern, Pythonic interface. It's lightweight, fast, and easy to use as both a Python library and a command-line tool. Pocketeer natively supports `atomarrays` from [`biotite`](https://www.biotite-python.org/latest/) and interactive viewing through [`atomview`](https://pypi.org/project/atomview/).
 
 **Read the [full documentation here](https://pocketeer.readthedocs.io/en/latest/).**
 
@@ -31,12 +31,6 @@ pip install pocketeer
 <details>
 <summary><strong>Other options</strong></summary>
 
-Install with notebook viewer:
-
-```bash
-pip install pocketeer[vis]
-```
-
 Install with acceleration (Numba JIT compilation for faster volume calculations):
 
 ```bash
@@ -49,12 +43,11 @@ Install using [uv](https://github.com/astral-sh/uv):
 uv add pocketeer
 ```
 
-Install with extra dependencies, e.g. for acceleration and visualization:
+Install with extra dependencies, e.g. for acceleration:
 
 ```bash
 uv add 'pocketeer[accelerate]'
-uv add 'pocketeer[vis]'
-uv add 'pocketeer[dev, vis, accelerate]'
+uv add 'pocketeer[dev, accelerate]'
 ```
 
 
@@ -173,15 +166,6 @@ Pocketeer implements a simplified version of the fpocket algorithm:
 ## Visualization in Notebooks
 
 Pocketeer integrates smoothly with Jupyter and scientific Python notebooks. You can directly visualize detected pockets for rapid exploration:
-
-> **Note:** The `view_pockets()` function requires the optional `atomworks` dependency. Install it with:
-> ```bash
-> pip install pocketeer[vis]
-> ```
-> or
-> ```bash
-> uv add 'pocketeer[vis]'
-> ```
 
 ```python
 import pocketeer as pt

@@ -1,20 +1,14 @@
 # Visualization Guide
 
 This guide shows you how to use Pocketeer's visualization features in a Jupyter notebook to explore detected protein pockets. 
-The visualization function in Pocketeer is a wrapper around [atomworks.io.utils.visualize.view](https://baker-laboratory.github.io/atomworks-dev/latest/io/utils/visualize.html), and displays detected pockets as colored spheres for intuitive exploration.
+The visualization function in Pocketeer is a wrapper around [atomview.view](https://pypi.org/project/atomview/), and displays detected pockets as colored spheres for intuitive exploration.
 
 ## Prerequisites
 
-First, install Pocketeer with visualization support:
+First, install Pocketeer:
 
 ```bash
-pip install pocketeer[vis]
-```
-
-Or install the visualization dependency separately:
-
-```bash
-pip install atomworks
+pip install pocketeer
 ```
 
 ## Basic Visualization in Jupyter

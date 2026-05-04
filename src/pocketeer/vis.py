@@ -1,14 +1,10 @@
-"""Visualization utilities for pocketeer using atomworks."""
+"""Visualization utilities for pocketeer using atomview."""
 
 import colorsys
-import contextlib
 from typing import Any
 
 import biotite.structure as struc  # type: ignore
-
-# Suppress Atomworks import messages about env variables
-with contextlib.redirect_stdout(None), contextlib.redirect_stderr(None):
-    from atomworks.io.utils.visualize import view  # type: ignore[import-untyped]
+from atomview import view  # type: ignore[import-untyped]
 
 from pocketeer.core.types import Pocket
 
@@ -23,11 +19,11 @@ def view_pockets(
     receptor_surface: bool = False,
     **kwargs: Any,
 ) -> Any:
-    """Visualize protein structure with detected pockets using atomworks.
+    """Visualize protein structure with detected pockets using atomview.
 
-    Note: This function largely just a wrapper around atomworks.io.utils.visualize.view.
+    Note: This function largely just a wrapper around atomview.view.
     For more advanced visualization, use the kwargs to pass to view and consults the docs:
-    https://baker-laboratory.github.io/atomworks-dev/latest/io/utils/visualize.html
+    https://pypi.org/project/atomview/
 
     Args:
         atomarray: Biotite AtomArray with structure data
@@ -40,10 +36,9 @@ def view_pockets(
         **kwargs: Additional keyword arguments for the viewer
 
     Returns:
-        atomworks viewer instance
+        atomview viewer instance
 
     Raises:
-        ImportError: if atomworks is not installed
         TypeError: if atomarray is not a Biotite AtomArray or pockets is not a Pocket/list[Pocket]
         ValueError: if no pockets provided
 
@@ -74,7 +69,7 @@ def view_pockets(
         raise ValueError("No pockets found")
 
     # Create viewer and add structure
-    # See https://baker-laboratory.github.io/atomworks-dev/latest/io/utils/visualize.html for more details # noqa: E501
+    # See https://pypi.org/project/atomview/ for more details.
     viewer = view(atomarray, show_cartoon=receptor_cartoon, show_surface=receptor_surface, **kwargs)
 
     # Generate pocket colors

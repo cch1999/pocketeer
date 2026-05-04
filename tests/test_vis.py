@@ -13,19 +13,11 @@ from pocketeer.core.types import AlphaSphere, Pocket
 
 def test_view_pockets_import():
     """Test that visualization function can be imported."""
-    # Test conditional import
-    if hasattr(pocketeer, "view_pockets"):
-        assert callable(pocketeer.view_pockets)
-    else:
-        # If not available, that's also valid (atomworks not installed)
-        pytest.skip("view_pockets not available (atomworks not installed)")
+    assert callable(pocketeer.view_pockets)
 
 
 def test_view_pockets_no_pockets():
     """Test view_pockets with empty pockets list."""
-    if not hasattr(pocketeer, "view_pockets"):
-        pytest.skip("view_pockets not available (atomworks not installed)")
-
     # Create a simple structure
     atoms = struc.array(
         [
@@ -42,9 +34,6 @@ def test_view_pockets_no_pockets():
 
 def test_view_pockets_invalid_input():
     """Test view_pockets with invalid input types."""
-    if not hasattr(pocketeer, "view_pockets"):
-        pytest.skip("view_pockets not available (atomworks not installed)")
-
     # Create mock pockets
     mock_pockets = [
         Pocket(
@@ -76,9 +65,6 @@ def test_view_pockets_invalid_input():
 
 def test_view_pockets_invalid_color_scheme():
     """Test view_pockets with invalid color scheme."""
-    if not hasattr(pocketeer, "view_pockets"):
-        pytest.skip("view_pockets not available (atomworks not installed)")
-
     # Create a simple structure and pockets
     atoms = struc.array(
         [
@@ -115,9 +101,6 @@ def test_view_pockets_invalid_color_scheme():
 
 def test_view_pockets_success():
     """Test successful visualization with real data."""
-    if not hasattr(pocketeer, "view_pockets"):
-        pytest.skip("view_pockets not available (atomworks not installed)")
-
     # Try to load a real structure and find pockets
     test_pdb = Path(__file__).parent / "data" / "6qrd.pdb"
     if not test_pdb.exists():
@@ -147,14 +130,11 @@ def test_view_pockets_success():
             pytest.skip("No pockets found in test structure")
 
     except ImportError as e:
-        pytest.skip(f"atomworks not available: {e}")
+        pytest.fail(f"Required visualization dependency is unavailable: {e}")
 
 
 def test_view_pockets_color_schemes():
     """Test all supported color schemes."""
-    if not hasattr(pocketeer, "view_pockets"):
-        pytest.skip("view_pockets not available (atomworks not installed)")
-
     # Create a simple structure
     atoms = struc.array(
         [
