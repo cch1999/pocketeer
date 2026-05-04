@@ -1105,13 +1105,13 @@ docs = [
 [package.metadata]
 requires-dist = [
     { name = "atomview", specifier = ">=0.1.1" },
-    { name = "biotite", specifier = ">=1.4" },
+    { name = "biotite", specifier = ">=1.0" },
     { name = "interrogate", marker = "extra == 'dev'", specifier = ">=1.7.0" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=7.1.0" },
     { name = "justfile", marker = "extra == 'dev'", specifier = ">=0.0.1a0" },
     { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6.1" },
     { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.0.0" },
-    { name = "numpy", specifier = ">=2.1" },
+    { name = "numpy", specifier = ">=1.25.0" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },

@@ -41,7 +41,7 @@ dependencies = [
     "scipy>=1.10",
     "typer>=0.19.2",
     "rich>=13.0",
-    "biotite>=1.4",
+    "biotite>=1.0",
 ]
 
 [project.urls]
