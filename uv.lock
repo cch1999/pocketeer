@@ -1105,7 +1105,7 @@ docs = [
 [package.metadata]
 requires-dist = [
     { name = "atomview", specifier = ">=0.1.1" },
-    { name = "biotite", specifier = ">=0.40" },
+    { name = "biotite", specifier = ">=1.4" },
     { name = "interrogate", marker = "extra == 'dev'", specifier = ">=1.7.0" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=7.1.0" },
     { name = "justfile", marker = "extra == 'dev'", specifier = ">=0.0.1a0" },

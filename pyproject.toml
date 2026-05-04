@@ -37,11 +37,11 @@ classifiers = [
 ]
 dependencies = [
     "atomview>=0.1.1",
-    "numpy>=2.1",
+    "numpy>=1.25.0",
     "scipy>=1.10",
     "typer>=0.19.2",
     "rich>=13.0",
-    "biotite>=0.40",
+    "biotite>=1.4",
 ]
 
 [project.urls]
