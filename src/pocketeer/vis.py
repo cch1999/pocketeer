@@ -39,7 +39,6 @@ def view_pockets(
         atomview viewer instance
 
     Raises:
-        ImportError: if atomview is not installed
         TypeError: if atomarray is not a Biotite AtomArray or pockets is not a Pocket/list[Pocket]
         ValueError: if no pockets provided
 
