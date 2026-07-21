@@ -84,9 +84,9 @@ def detect(
         20.0, "--sasa-threshold", help="SASA threshold for buried spheres (Å²)"
     ),
     merge_distance: float = typer.Option(
-        1.75, "--merge-distance", help="Distance threshold for merging (Å)"
+        2.75, "--merge-distance", help="Distance threshold for merging (Å)"
     ),
-    min_spheres: int = typer.Option(35, "--min-spheres", help="Minimum spheres per pocket cluster"),
+    min_spheres: int = typer.Option(40, "--min-spheres", help="Minimum spheres per pocket cluster"),
     ignore_hydrogens: bool = typer.Option(True, "--ignore-hydrogens", help="Ignore hydrogen atoms"),
     ignore_water: bool = typer.Option(True, "--ignore-water", help="Ignore water molecules"),
     ignore_hetero: bool = typer.Option(True, "--ignore-hetero", help="Ignore hetero atoms"),

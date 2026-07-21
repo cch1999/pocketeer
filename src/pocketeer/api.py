@@ -27,8 +27,8 @@ def find_pockets(
     r_max: float = 6.0,
     polar_probe_radius: float = 1.4,
     sasa_threshold: float = 20.0,
-    merge_distance: float = 1.75,
-    min_spheres: int = 35,
+    merge_distance: float = 2.75,
+    min_spheres: int = 40,
     ignore_hydrogens: bool = True,
     ignore_water: bool = True,
     ignore_hetero: bool = True,
@@ -52,8 +52,8 @@ def find_pockets(
             Spheres with mean SASA below this threshold are considered buried (interior) and
             kept for pocket detection. Higher values include more surface-exposed spheres.
             Typical range: 15-30 Å². Default: 20.0
-        merge_distance: Distance threshold for merging nearby sphere clusters (Å). Default: 1.75
-        min_spheres: Minimum number of spheres per pocket cluster. Default: 35
+        merge_distance: Distance threshold for merging nearby sphere clusters (Å). Default: 2.75
+        min_spheres: Minimum number of spheres per pocket cluster. Default: 40
         ignore_hydrogens: Ignore hydrogen atoms (recommended). Default: True
         ignore_water: Ignore water molecules (recommended). Default: True
         ignore_hetero: Ignore hetero atoms i.e. ligands (recommended). Default: True
