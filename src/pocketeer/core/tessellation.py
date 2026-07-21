@@ -6,6 +6,7 @@ import biotite.structure as struc  # type: ignore
 import numpy as np
 import numpy.typing as npt
 from biotite.structure import sasa  # type: ignore
+from biotite.structure.info import vdw_radius_protor, vdw_radius_single  # type: ignore
 from scipy.spatial import (
     Delaunay,
     cKDTree,  # type: ignore
@@ -15,6 +16,53 @@ from ..utils.constants import MIN_ATOMS_FOR_TESSELLATION
 from ..utils.exceptions import TessellationError
 from .geometry import circumsphere, is_sphere_empty
 from .types import AlphaSphere
+
+_GENERIC_PROTOR_ATOM_NAMES = {"C": "C", "N": "N", "O": "O"}
+_SULFUR_PROTOR_ATOM_NAMES = {"CYS": "SG", "MET": "SD"}
+_DEFAULT_VDW_RADIUS = 1.7
+
+
+def _sanitize_for_sasa(atomarray: struc.AtomArray) -> tuple[struc.AtomArray, np.ndarray]:
+    """Return a SASA-only copy with ProtOr-compatible atom names and radii.
+
+    Experimental structures sometimes label modified atoms as if they belonged
+    to a canonical amino acid, for example ``MET:SE`` or ``THR:P``. ProtOr uses
+    the residue and atom names as a strict lookup key and raises ``KeyError`` for
+    these combinations. Preserve the original array for every other operation,
+    but sanitize invalid names on a copy and fall back to an element radius when
+    the residue has no compatible ProtOr atom.
+    """
+    sanitized = atomarray.copy()
+    radii = np.empty(len(sanitized), dtype=float)
+
+    for index, (raw_res_name, raw_atom_name, raw_element) in enumerate(
+        zip(sanitized.res_name, sanitized.atom_name, sanitized.element, strict=True)
+    ):
+        res_name = str(raw_res_name).upper()
+        atom_name = str(raw_atom_name).upper()
+        element = str(raw_element).upper()
+        try:
+            radius = vdw_radius_protor(res_name, atom_name)
+        except (KeyError, ValueError):
+            replacement = (
+                _SULFUR_PROTOR_ATOM_NAMES.get(res_name)
+                if atom_name.startswith("S")
+                else _GENERIC_PROTOR_ATOM_NAMES.get(atom_name[:1])
+            )
+            if replacement is not None:
+                try:
+                    radius = vdw_radius_protor(res_name, replacement)
+                    sanitized.atom_name[index] = replacement
+                except KeyError:
+                    radius = None
+            else:
+                radius = None
+
+        if radius is None:
+            radius = vdw_radius_single(element)
+        radii[index] = radius if radius is not None else _DEFAULT_VDW_RADIUS
+
+    return sanitized, radii
 
 
 def compute_alpha_spheres(
@@ -94,8 +142,14 @@ def label_polarity(
         atomarray: Biotite AtomArray with structure data
         polar_probe_radius: Probe radius for SASA calculation (Å)
     """
-    # Calculate SASA once for all atoms
-    sasa_values = sasa(atomarray, probe_radius=polar_probe_radius)
+    # Calculate SASA once for all atoms. Sanitization is isolated to a copy so
+    # atom indices and the annotations used by the detector remain unchanged.
+    sasa_atomarray, vdw_radii = _sanitize_for_sasa(atomarray)
+    sasa_values = sasa(
+        sasa_atomarray,
+        probe_radius=polar_probe_radius,
+        vdw_radii=vdw_radii,
+    )
 
     # For each sphere, compute mean SASA of its 4 defining atoms
     labeled_spheres = []
