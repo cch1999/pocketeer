@@ -11,14 +11,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `merge_pockets` function to combine multiple pockets into a simple object
 - Added `.coords` property to `Pocket` class returning an (N, 3) array of sphere centers
+- Added a reproducible P2Rank training and evaluation pipeline under `benchmarks/`, plus an
+  independent RCSB ranking benchmark.
+- Added regression tests for pocket scoring, non-standard atom names, and large sphere graphs.
 
 ### Changed
 
 - Updated `view_pockets` to accept a single `Pocket` object in addition to a list of pockets
+- Replaced the size-based ranking heuristic with a six-feature logistic-regression ligandability
+  model. Its coefficients are built into the package, so inference requires no model artifact or
+  machine-learning dependency.
+- Changed pocket scores to probabilities in the `[0, 1]` range, with higher values indicating a
+  more likely ligand-binding site.
+- Changed the default `merge_distance` from 1.75 A to 2.75 A and `min_spheres` from 35 to 40 to
+  improve binding-site detection.
+- On the COACH420 engineering evaluation set, the updated detector and scorer detected 95.8% of
+  evaluable sites and achieved 83.0% Top-1 and 92.6% Top-3 end-to-end ranking accuracy. These
+  results are not an untouched holdout because detector defaults were selected using this set.
 
 ### Fixed
 
 - Used `struc.filter_solvent` from `biotite` to filter solvent instead of just water CCD code.
+- Sanitized non-standard atom annotations before SASA calculation, including residue-aware sulfur
+  names and an element-radius fallback, without modifying the caller's atom array.
+- Replaced recursive sphere-graph traversal with an iterative implementation to avoid recursion
+  failures on large or densely connected pockets.
 
 ## [0.3.0] - 2026-01-12
 
