@@ -1,0 +1,51 @@
+# Holo drug-target structures for ranking benchmark.
+# Biased toward larger / multi-pocket proteins where the true ligand site
+# is NOT necessarily the largest cavity (kinases, GPCRs, proteases, NRs).
+# The primary ligand is auto-detected (largest drug-like HETATM residue),
+# so only the 4-character PDB ID is needed here.
+#
+# kinases
+1m17
+2hyy
+1iep
+1xkk
+3poz
+1opj
+1uwh
+# GPCRs
+3eml
+2vt4
+2rh1
+3pbl
+4dkl
+# proteases / coagulation
+1hpx
+1oyt
+1qbu
+1ydr
+# nuclear receptors
+1fm9
+2p54
+# other large enzymes / targets
+4cox
+1hvy
+1l2s
+1k3u
+1gkc
+1ke5
+1lpz
+1meh
+1n2v
+1oq5
+1owe
+1pmn
+1q41
+1r55
+1s3v
+1t46
+1unl
+1uou
+1v0p
+1ywr
+2br1
+2gss

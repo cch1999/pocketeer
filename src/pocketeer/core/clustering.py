@@ -56,22 +56,23 @@ def connected_components(graph: dict[int, set[int]]) -> list[set[int]]:
     visited = set()
     components = []
 
-    def dfs(node: int, component: set[int]) -> None:
-        """Depth-first search to explore component."""
-        visited.add(node)
-        component.add(node)
-        for neighbor in graph.get(node, set()):
-            if neighbor not in visited:
-                dfs(neighbor, component)
-
     # Visit all nodes
     all_nodes = set(graph.keys()) | {n for neighbors in graph.values() for n in neighbors}
 
     for node in all_nodes:
-        if node not in visited:
-            component: set[int] = set()
-            dfs(node, component)
-            components.append(component)
+        if node in visited:
+            continue
+        component: set[int] = set()
+        stack = [node]
+        visited.add(node)
+        while stack:
+            current = stack.pop()
+            component.add(current)
+            for neighbor in graph.get(current, set()):
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    stack.append(neighbor)
+        components.append(component)
 
     return components
 
@@ -79,8 +80,8 @@ def connected_components(graph: dict[int, set[int]]) -> list[set[int]]:
 def cluster_spheres(
     spheres: list[AlphaSphere],
     *,
-    merge_distance: float = 1.2,
-    min_spheres: int = 35,
+    merge_distance: float = 2.75,
+    min_spheres: int = 40,
 ) -> list[list[AlphaSphere]]:
     """Cluster alpha-spheres into pockets using graph connectivity.
 
