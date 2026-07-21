@@ -15,8 +15,8 @@ pocketeer protein.pdb  # also works with .cif files
 - `--r-max X` : Maximum sphere radius (Å, default: 6.0)
 - `--polar-probe X` : Probe radius for SASA calculation (Å, default: 1.4)
 - `--sasa-threshold X` : SASA threshold for buried spheres (Å², default: 20.0)
-- `--min-spheres N` : Minimum spheres per pocket (default: 35)
-- `--merge-distance X` : Distance threshold for clustering (Å, default: 1.75)
+- `--min-spheres N` : Minimum spheres per pocket (default: 40)
+- `--merge-distance X` : Distance threshold for clustering (Å, default: 2.75)
 - `--ignore-hetero False` : Keep ligands/ions (default: True)
 - `--no-summary` : Skip summary file generation
 

@@ -26,8 +26,8 @@ pocketeer.find_pockets(
     r_max: float = 6.0,
     polar_probe_radius: float = 1.4,
     sasa_threshold: float = 20.0,
-    merge_distance: float = 1.75,
-    min_spheres: int = 35,
+    merge_distance: float = 2.75,
+    min_spheres: int = 40,
     ignore_hydrogens: bool = True,
     ignore_water: bool = True,
     ignore_hetero: bool = True
@@ -41,8 +41,8 @@ pocketeer.find_pockets(
 - **`r_max`**: Maximum alpha-sphere radius (Å). Default: 6.0
 - **`polar_probe_radius`**: Probe radius for SASA calculation (Å). Default: 1.4
 - **`sasa_threshold`**: Threshold for SASA value to determine if a sphere is buried (Å²). Spheres with mean SASA below this threshold are considered buried and kept for pocket detection. Default: 20.0
-- **`merge_distance`**: Distance threshold for merging nearby sphere clusters (Å). Default: 1.75
-- **`min_spheres`**: Minimum number of spheres per pocket cluster. Default: 35
+- **`merge_distance`**: Distance threshold for merging nearby sphere clusters (Å). Default: 2.75
+- **`min_spheres`**: Minimum number of spheres per pocket cluster. Default: 40
 - **`ignore_hydrogens`**: Remove hydrogen atoms (recommended: True)
 - **`ignore_water`**: Remove water molecules (recommended: True)  
 - **`ignore_hetero`**: Remove hetero atoms/ligands (recommended: True)
@@ -145,8 +145,8 @@ All parameters for `find_pockets()` can be passed directly as keyword arguments:
 - **`r_max`** (default: 6.0 Å): Maximum alpha-sphere radius  
 - **`polar_probe_radius`** (default: 1.4 Å): Probe radius for SASA calculation. Used to compute solvent accessible surface area of atoms defining each sphere
 - **`sasa_threshold`** (default: 20.0 Å²): Threshold for mean SASA value to determine if a sphere is buried. Spheres with mean SASA below this threshold are considered buried (interior) and kept for pocket detection. Higher values include more surface-exposed spheres
-- **`merge_distance`** (default: 1.75 Å): Distance threshold for merging nearby sphere clusters
-- **`min_spheres`** (default: 35): Minimum number of spheres per pocket cluster
+- **`merge_distance`** (default: 2.75 Å): Distance threshold for merging nearby sphere clusters
+- **`min_spheres`** (default: 40): Minimum number of spheres per pocket cluster
 
 ## Visualization
 
@@ -203,4 +203,3 @@ pockets = pt.find_pockets(atomarray)
 viewer = pt.view_pockets(atomarray, pockets)
 viewer.show()
 ```
-

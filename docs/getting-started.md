@@ -92,11 +92,11 @@ for pocket in pockets:
 
 ### Clustering Parameters
 
-- **`min_spheres`** (default: 35): Minimum spheres per pocket cluster
+- **`min_spheres`** (default: 40): Minimum spheres per pocket cluster
   - Higher values require more evidence for a pocket
   - Lower values may detect smaller or less well-defined pockets
 
-- **`merge_distance`** (default: 1.75 Å): Distance threshold for merging nearby spheres
+- **`merge_distance`** (default: 2.75 Å): Distance threshold for merging nearby spheres
   - Smaller values create more fragmented pockets
   - Larger values merge nearby pockets together
 
@@ -171,4 +171,3 @@ For large structures (>5000 atoms):
 - **[CLI Guide](cli-guide.md)** - Command-line usage
 - **[Visualization Guide](visualization-guide.md)** - Notebook visualization examples
 - **[Algorithm](algorithm.md)** - Technical details
-
