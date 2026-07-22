@@ -94,16 +94,46 @@ def compute_alpha_spheres(
     # Build KD-tree once for fast sphere emptiness checks
     tree = cKDTree(coords)
 
+    # Compute the circumspheres for all tetrahedra in one batched linear
+    # algebra operation.  Calling np.linalg.solve() once per tetrahedron is
+    # disproportionately expensive for the tens of thousands produced by a
+    # typical protein.
+    simplices = tri.simplices
+    tet_points = coords[simplices]
+    relative_points = tet_points[:, 1:, :] - tet_points[:, :1, :]
+    matrices = 2.0 * relative_points
+    right_hand_sides = np.einsum("nij,nij->ni", relative_points, relative_points)
+
+    determinants = np.linalg.det(matrices)
+    nondegenerate = determinants != 0.0
+    relative_centers = np.zeros((len(simplices), 3), dtype=coords.dtype)
+    try:
+        relative_centers[nondegenerate] = np.linalg.solve(
+            matrices[nondegenerate], right_hand_sides[nondegenerate]
+        )
+    except np.linalg.LinAlgError:
+        # Extremely ill-conditioned input may still make a batched solve fail.
+        # Preserve the previous per-tetrahedron behaviour for this rare case.
+        for index in np.flatnonzero(nondegenerate):
+            _, radius = circumsphere(tet_points[index])
+            if radius == 0.0:
+                nondegenerate[index] = False
+                continue
+            relative_centers[index] = np.linalg.solve(matrices[index], right_hand_sides[index])
+
+    radii = np.linalg.norm(relative_centers, axis=1)
+    candidate_indices = np.flatnonzero(
+        nondegenerate & (radii >= r_min) & (radii <= r_max)
+    )
+    centers = relative_centers + tet_points[:, 0, :]
+
     spheres = []
 
-    # Process each tetrahedron
-    for sphere_id, simplex in enumerate(tri.simplices):
-        tet_points = coords[simplex]
-        center, radius = circumsphere(tet_points)
-
-        # Filter by radius
-        if radius < r_min or radius > r_max:
-            continue
+    # The remaining work is limited to radius-qualified tetrahedra.
+    for sphere_id in candidate_indices:
+        simplex = simplices[sphere_id]
+        center = centers[sphere_id]
+        radius = float(radii[sphere_id])
 
         # Check if sphere is empty (alpha-shape criterion) - use fast version
         atom_indices = set(simplex.tolist())
