@@ -58,6 +58,7 @@ def extract_pocket_residues(
 def create_residue_mask(
     residues: list[tuple[str, int, str]],
     atomarray: struc.AtomArray,
+    atom_residue_ids: np.ndarray | None = None,
 ) -> np.ndarray:
     """Create a boolean mask for atoms belonging to pocket residues.
 
@@ -72,19 +73,22 @@ def create_residue_mask(
     # Format: "chain_id:res_id:res_name" for efficient comparison
     residue_ids = {f"{cid}:{rid}:{rname}" for cid, rid, rname in residues}
 
-    # Extract arrays and create identifiers for all atoms using vectorized operations
+    if atom_residue_ids is None:
+        atom_residue_ids = create_atom_residue_ids(atomarray)
+
+    # Vectorized membership check using numpy's isin (highly optimized)
+    mask = np.isin(atom_residue_ids, list(residue_ids))
+
+    return mask
+
+
+def create_atom_residue_ids(atomarray: struc.AtomArray) -> np.ndarray:
+    """Create reusable residue identifiers for every atom in an array."""
     chain_ids = atomarray.chain_id.astype(str)
     res_ids = atomarray.res_id.astype(int).astype(str)
     res_names = atomarray.res_name.astype(str)
-
-    # Create identifiers for all atoms using vectorized string concatenation
     atom_ids = np.char.add(np.char.add(chain_ids, ":"), np.char.add(res_ids, ":"))
-    atom_ids = np.char.add(atom_ids, res_names)
-
-    # Vectorized membership check using numpy's isin (highly optimized)
-    mask = np.isin(atom_ids, list(residue_ids))
-
-    return mask
+    return np.char.add(atom_ids, res_names)
 
 
 def score_pocket(
@@ -187,6 +191,7 @@ def create_pocket(
     pocket_spheres: list[AlphaSphere],
     atomarray: struc.AtomArray,
     original_atomarray: struc.AtomArray | None = None,
+    atom_residue_ids: np.ndarray | None = None,
 ) -> Pocket:
     """Create a Pocket object with computed descriptors.
 
@@ -206,7 +211,7 @@ def create_pocket(
     # Create residue mask for easy selection
     # Use original atomarray if provided, otherwise use filtered atomarray
     mask_atomarray = original_atomarray if original_atomarray is not None else atomarray
-    mask = create_residue_mask(residues, mask_atomarray)
+    mask = create_residue_mask(residues, mask_atomarray, atom_residue_ids)
 
     # Delegate to helper function
     return _create_pocket_from_components(pocket_id, pocket_spheres, residues, mask)
