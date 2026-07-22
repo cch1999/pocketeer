@@ -71,6 +71,29 @@ def test_find_pockets_sasa_threshold(load_test_structure):
     )
 
 
+def test_find_pockets_insertion_code(load_test_structure):
+    """Pocket residues preserve PDB insertion codes."""
+    # First add a residue with an insertion code a residue
+    # in the first (highest-scoring) pocket
+    RESIDUE_NUMBER = 83
+    CHAIN_ID = "B"
+    INSERTION_CODE = "A"
+
+    mask = (load_test_structure.chain_id == CHAIN_ID) & (
+        load_test_structure.res_id == RESIDUE_NUMBER
+    )
+    load_test_structure.ins_code[mask] = INSERTION_CODE
+
+    # Ensure that the insertion code is preserved in the pocket residues
+    pockets = find_pockets(load_test_structure)
+    seen = {r for p in pockets for r in p.residues}
+    assert any(
+        r.chain == CHAIN_ID and r.res_num == RESIDUE_NUMBER and r.ins_code == INSERTION_CODE
+        for r in seen
+    ), f"expected chain {CHAIN_ID} residue {RESIDUE_NUMBER}"
+    f"with insertion code {INSERTION_CODE} in some pocket"
+
+
 def test_write_individual_pocket_jsons(tmp_path, load_test_structure):
     """Pocket JSONs should use 1-based numbering."""
     pockets = find_pockets(load_test_structure)

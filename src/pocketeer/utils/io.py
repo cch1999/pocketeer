@@ -250,7 +250,7 @@ def _pocket_to_dict(pocket: Pocket) -> dict[str, Any]:
 
     Uses dataclasses.asdict() as a base and applies custom transformations:
     - Excludes the 'mask' field (not serialized)
-    - Converts residue tuples to dictionaries
+    - Converts residue records to dictionaries
     - Includes computed properties (n_spheres, n_residues)
 
     Args:
@@ -265,10 +265,15 @@ def _pocket_to_dict(pocket: Pocket) -> dict[str, Any]:
     # Remove mask field (not serialized)
     data.pop("mask", None)
 
-    # Convert residue tuples to dictionaries
+    # Convert residues to dictionaries (stable keys for JSON consumers)
     data["residues"] = [
-        {"chain_id": chain_id, "res_id": res_id, "res_name": res_name}
-        for chain_id, res_id, res_name in pocket.residues
+        {
+            "chain_id": pr.chain,
+            "res_id": pr.res_num,
+            "ins_code": pr.ins_code,
+            "res_name": pr.residue,
+        }
+        for pr in pocket.residues
     ]
 
     # Add computed properties
@@ -357,8 +362,8 @@ def write_summary(
                 # Show first 10 residues, or all if fewer than 10
                 MAX_RESIDUES_TO_SHOW = 10
                 residue_strs = [
-                    f"{res_name}{chain_id}{res_id}"
-                    for chain_id, res_id, res_name in pocket.residues[:MAX_RESIDUES_TO_SHOW]
+                    f"{r.residue}{r.chain}{r.res_num}{r.ins_code}"
+                    for r in pocket.residues[:MAX_RESIDUES_TO_SHOW]
                 ]
                 f.write(f"    {', '.join(residue_strs)}")
                 if len(pocket.residues) > MAX_RESIDUES_TO_SHOW:

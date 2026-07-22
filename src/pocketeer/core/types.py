@@ -21,6 +21,16 @@ class AlphaSphere:
     atom_indices: list[int]  # indices of the 4 Delaunay vertices
 
 
+@dataclass(frozen=True, order=True)
+class PocketResidue:
+    """A unique protein residue (chain + sequence position + name)."""
+
+    chain: str
+    res_num: int
+    ins_code: str  # PDB insertion code; empty string if none
+    residue: str  # residue name / three-letter code
+
+
 @dataclass(frozen=True)
 class Pocket:
     """Represents a detected pocket (cluster of alpha-spheres)."""
@@ -30,7 +40,7 @@ class Pocket:
     centroid: npt.NDArray[np.float64]  # geometric center
     volume: float  # estimated volume in A³
     score: float  # druggability/quality score
-    residues: list[tuple[str, int, str]]  # unique residues as (chain_id, res_id, res_name) tuples
+    residues: list[PocketResidue]
     mask: npt.NDArray[np.bool_]  # boolean mask for selecting atoms in pocket residues
 
     @property
