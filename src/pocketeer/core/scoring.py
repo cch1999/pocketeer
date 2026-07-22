@@ -107,9 +107,6 @@ def score_pocket(
     - mean sphere SASA (buriedness)
     - fraction of aromatic lining residues
 
-    Features are standardised and combined with coefficients baked into
-    :mod:`pocketeer.utils.constants` (no model file or ML dependency at runtime).
-
     Args:
         pocket: pocket to score
 

@@ -9,12 +9,7 @@ MAX_RADIUS_THRESHOLD = 5.0
 
 # Pocket ranking model: a logistic-regression "ligandability" classifier trained
 # on the P2Rank chen11 benchmark and evaluated on the coach420 set
-# (top-1 ~87%, ROC-AUC ~0.85, vs ~72% for size-based scoring). It scores each
-# pocket from six features computed entirely from the Pocket object. Features are
-# standardised with SCORE_LR_MEAN/STD, combined with SCORE_LR_COEF + bias, and
-# squashed by a logistic into a 0-1 score. No external model file or ML
-# dependency is needed at runtime - only these baked-in coefficients.
-#
+# (top-1 ~87%, ROC-AUC ~0.85, vs ~72% for size-based scoring).
 # Feature order: (n_residues, n_spheres, volume_per_sphere, mean_radius,
 #                 mean_sasa, fraction_aromatic_residues)
 SCORE_LR_MEAN = (18.68027, 85.5873, 30.03137, 3.76683, 9.8632, 0.14239)
