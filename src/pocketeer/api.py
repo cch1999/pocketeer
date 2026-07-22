@@ -13,7 +13,7 @@ from .core import (
     filter_surface_spheres,
     label_polarity,
 )
-from .core.scoring import _create_pocket_from_components
+from .core.scoring import _create_pocket_from_components, create_atom_residue_ids
 from .utils.constants import MIN_ATOMS_FOR_TESSELLATION
 from .utils.exceptions import ValidationError
 
@@ -130,8 +130,15 @@ def find_pockets(
 
     # Create Pocket objects with descriptors
     # Pass filtered atomarray for residue extraction, original for mask creation
+    atom_residue_ids = create_atom_residue_ids(original_atomarray)
     pockets = [
-        create_pocket(pocket_id, cluster, atomarray, original_atomarray)
+        create_pocket(
+            pocket_id,
+            cluster,
+            atomarray,
+            original_atomarray,
+            atom_residue_ids,
+        )
         for pocket_id, cluster in enumerate(pocket_clusters)
     ]
 
