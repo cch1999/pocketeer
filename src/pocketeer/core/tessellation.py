@@ -122,9 +122,7 @@ def compute_alpha_spheres(
             relative_centers[index] = np.linalg.solve(matrices[index], right_hand_sides[index])
 
     radii = np.linalg.norm(relative_centers, axis=1)
-    candidate_indices = np.flatnonzero(
-        nondegenerate & (radii >= r_min) & (radii <= r_max)
-    )
+    candidate_indices = np.flatnonzero(nondegenerate & (radii >= r_min) & (radii <= r_max))
     centers = relative_centers + tet_points[:, 0, :]
 
     spheres = []
