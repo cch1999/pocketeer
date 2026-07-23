@@ -31,15 +31,17 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Operating System :: OS Independent",
 ]
 dependencies = [
     "atomview>=0.1.1",
-    "numpy>=1.24",
+    "numpy>=1.25.0",
     "scipy>=1.10",
     "typer>=0.19.2",
     "rich>=13.0",
-    "biotite>=0.40",
+    "biotite>=1.0",
 ]
 
 [project.urls]
